@@ -22,5 +22,5 @@ jobs:
 
       - name: Build and Push Docker image for integration
         run: |
-          docker build --build-arg  -t pucarsolutionsdev.azurecr.io/integration:v1.0.0-${{ github.sha }} -f build/maven/Dockerfile .
+          docker build -t pucarsolutionsdev.azurecr.io/integration:v1.0.0-${{ github.sha }} -f build/maven/Dockerfile .
           docker push pucarsolutionsdev.azurecr.io/integration:v1.0.0-${{ github.sha }}
