@@ -24,3 +24,11 @@ jobs:
         run: |
           docker build -t pucarsolutionsdev.azurecr.io/integration:v1.0.0-${{ github.sha }} -f build/maven/Dockerfile .
           docker push pucarsolutionsdev.azurecr.io/integration:v1.0.0-${{ github.sha }}
+          
+      - name: Trigger Deployment Pipeline for Icops-image
+        run: |
+           curl -X POST \
+           -H "Accept: application/vnd.github.v3+json" \
+           -H "Authorization: token ${{ secrets.GHUB_TOKEN }}" \
+           https://api.github.com/repos/pucardotorg/pucar-Devops/actions/workflows/solutions-dev.yaml/dispatches \
+           -d '{"ref":"Scheduler-dev"}'
