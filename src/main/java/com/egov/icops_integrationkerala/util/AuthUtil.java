@@ -2,7 +2,6 @@ package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.AuthTokenResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +21,11 @@ public class AuthUtil {
 
     private RestTemplate restTemplate;
 
-    private final ObjectMapper objectMapper;
-
     private final IcopsConfiguration config;
 
     @Autowired
-    public AuthUtil(RestTemplate restTemplate, ObjectMapper objectMapper, IcopsConfiguration config) {
+    public AuthUtil(RestTemplate restTemplate, IcopsConfiguration config) {
         this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
         this.config = config;
     }
 
@@ -51,8 +47,8 @@ public class AuthUtil {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
         try {
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(authUrl, requestEntity, String.class);
-            return objectMapper.convertValue(responseEntity.getBody(), AuthTokenResponse.class);
+            ResponseEntity<AuthTokenResponse> responseEntity = restTemplate.postForEntity(authUrl, requestEntity, AuthTokenResponse.class);
+            return responseEntity.getBody();
         } catch (RestClientException e) {
             log.error("Error occurred at authentication ", e);
             throw new CustomException("ICOPS_AUTH_APP_ERR", "Error occurred when authenticating ICops");
