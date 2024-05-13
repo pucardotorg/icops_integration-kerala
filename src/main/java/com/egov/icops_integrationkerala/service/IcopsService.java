@@ -47,8 +47,8 @@ public class IcopsService {
             ResponseEntity<ProcessResponse> responseEntity =
                     restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, ProcessResponse.class);
             // Print the response body and status code
-            System.out.println("Response Body: " + responseEntity.getBody());
-            System.out.println("Status Code: " + responseEntity.getStatusCode());
+            log.info("Response Body: " + responseEntity.getBody());
+            log.info("Status Code: " + responseEntity.getStatusCode());
             return responseEntity.getBody();
         } catch (RestClientException e) {
             log.error("Error occurred when sending Process Request ", e);
