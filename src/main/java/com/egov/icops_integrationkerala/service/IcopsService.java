@@ -2,10 +2,7 @@ package com.egov.icops_integrationkerala.service;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.config.MyRestTemplateConfig;
-import com.egov.icops_integrationkerala.model.AuthTokenResponse;
-import com.egov.icops_integrationkerala.model.IcopsProcessRequest;
-import com.egov.icops_integrationkerala.model.IcopsProcessResponse;
-import com.egov.icops_integrationkerala.model.ProcessRequest;
+import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.AuthUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +35,7 @@ public class IcopsService {
     }
 
 
-    public IcopsProcessResponse sendRequestToIcops(IcopsProcessRequest icopsProcessRequest) {
+    public ProcessResponse sendRequestToIcops(IcopsProcessRequest icopsProcessRequest) {
         AuthTokenResponse authResponse = authUtil.authenticateAndGetToken();
         String icopsUrl = config.getIcopsUrl() + config.getProcessRequestEndPoint();
         HttpHeaders headers = new HttpHeaders();
@@ -47,8 +44,8 @@ public class IcopsService {
         HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(icopsProcessRequest.getProcessRequest(), headers);
         try {
             // Send the request and get the response
-            ResponseEntity<IcopsProcessResponse> responseEntity =
-                    restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, IcopsProcessResponse.class);
+            ResponseEntity<ProcessResponse> responseEntity =
+                    restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, ProcessResponse.class);
             return responseEntity.getBody();
         } catch (RestClientException e) {
             log.error("Error occurred when sending Process Request ", e);
