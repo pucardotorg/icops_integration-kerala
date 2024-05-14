@@ -6,14 +6,14 @@ import lombok.Data;
 @Data
 public class ProcessRequest {
 
-    @JsonProperty("processCaseo")
-    private String processCaseNo;
+    @JsonProperty("processCaseno")
+    private String processCaseno;
 
     @JsonProperty("processUniqueId")
     private String processUniqueId;
 
     @JsonProperty("sparty_data")
-    private PartyData partyData;
+    private PartyData sparty_data;
 
     @JsonProperty("processCourtCode")
     private String processCourtCode;
@@ -120,6 +120,9 @@ public class ProcessRequest {
 
     @JsonProperty("processPartyType")
     private String processPartyType;
+
+    @JsonProperty("processRespondantType")
+    private String processRespondntType;
 
     @JsonProperty("processCino")
     private String processCino;
