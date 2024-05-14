@@ -44,6 +44,7 @@ public class IcopsService {
         headers.set("Authorization", "Bearer " + authResponse.getAccessToken());
         HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(icopsProcessRequest.getProcessRequest(), headers);
         try {
+            log.info("Request Body: " + objectMapper.writeValueAsString(icopsProcessRequest.getProcessRequest()));
             // Send the request and get the response
             ResponseEntity<Object> responseEntity =
                     restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, Object.class);
