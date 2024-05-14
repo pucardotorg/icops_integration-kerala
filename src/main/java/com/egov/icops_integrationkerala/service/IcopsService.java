@@ -4,6 +4,7 @@ import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.config.MyRestTemplateConfig;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.AuthUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.tracer.model.CustomException;
@@ -44,15 +45,19 @@ public class IcopsService {
         HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(icopsProcessRequest.getProcessRequest(), headers);
         try {
             // Send the request and get the response
-            ResponseEntity<ProcessResponse> responseEntity =
-                    restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, ProcessResponse.class);
+            ResponseEntity<Object> responseEntity =
+                    restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, Object.class);
+            ProcessResponse response = objectMapper.convertValue(responseEntity.getBody(), ProcessResponse.class);
             // Print the response body and status code
-            log.info("Response Body: " + responseEntity.getBody());
+            log.info("Response Body: " + objectMapper.writeValueAsString(responseEntity.getBody()));
             log.info("Status Code: " + responseEntity.getStatusCode());
-            return responseEntity.getBody();
+            return response;
         } catch (RestClientException e) {
             log.error("Error occurred when sending Process Request ", e);
             throw new CustomException("ICOPS_PR_APP_ERR", "Error occurred when sending Process Request");
+        } catch (JsonProcessingException e) {
+            log.error("Error occurred when logging Process response ", e);
+            throw new CustomException("ICOPS_PR_APP_ERR", "Error occurred when logging Process response");
         }
     }
 
