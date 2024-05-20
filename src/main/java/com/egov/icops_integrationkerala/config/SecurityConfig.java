@@ -31,7 +31,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/icops-integration/getAuthToken/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
