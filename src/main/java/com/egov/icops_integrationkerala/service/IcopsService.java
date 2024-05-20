@@ -2,14 +2,20 @@ package com.egov.icops_integrationkerala.service;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.config.MyRestTemplateConfig;
+import com.egov.icops_integrationkerala.kafka.Producer;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.AuthUtil;
+import com.egov.icops_integrationkerala.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
@@ -26,18 +32,28 @@ public class IcopsService {
 
     private AuthUtil authUtil;
 
+    private Producer producer;
+
+    private final AuthenticationManager authenticationManager;
+
+    private JwtUtil jwtUtil;
+
     @Autowired
     public IcopsService(MyRestTemplateConfig restTemplate, ObjectMapper objectMapper,
-                        IcopsConfiguration config, AuthUtil authUtil) {
+                        IcopsConfiguration config, AuthUtil authUtil, Producer producer,
+                        AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.config = config;
         this.authUtil = authUtil;
+        this.producer = producer;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
 
     public ProcessResponse sendRequestToIcops(IcopsProcessRequest icopsProcessRequest) {
-        AuthTokenResponse authResponse = authUtil.authenticateAndGetToken();
+        AuthToken authResponse = authUtil.authenticateAndGetToken();
         String icopsUrl = config.getIcopsUrl() + config.getProcessRequestEndPoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -62,4 +78,19 @@ public class IcopsService {
         }
     }
 
+    public AuthToken generateAuthToken(String serviceName, String serviceKey, String authType) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(serviceName, serviceKey));
+            return jwtUtil.generateToken(serviceName);
+        } catch (AuthenticationException e) {
+            throw new CustomException("ICOPS_PS_AUTH_ERR", "Invalid Service Credentials");
+        }
+    }
+
+    public ProcessResponse processPoliceReport(ProcessReport processReport) {
+        log.info("Process Unique Id", processReport.getProcessUniqueId());
+        log.info("Process Action Status", processReport.getProcessActionStatus());
+        log.info(processReport.toString());
+        return null;
+    }
 }

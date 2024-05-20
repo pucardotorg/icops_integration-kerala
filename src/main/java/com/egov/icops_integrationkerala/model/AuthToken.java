@@ -1,10 +1,12 @@
 package com.egov.icops_integrationkerala.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class AuthTokenResponse {
+@Builder
+public class AuthToken {
 
     @JsonProperty("access_token")
     private String accessToken;

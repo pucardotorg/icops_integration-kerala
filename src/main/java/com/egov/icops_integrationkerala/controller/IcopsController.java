@@ -1,8 +1,6 @@
 package com.egov.icops_integrationkerala.controller;
 
-import com.egov.icops_integrationkerala.model.IcopsProcessRequest;
-import com.egov.icops_integrationkerala.model.IcopsProcessResponse;
-import com.egov.icops_integrationkerala.model.ProcessResponse;
+import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.service.IcopsService;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.response.ResponseInfo;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/icops-integration")
@@ -35,5 +34,23 @@ public class IcopsController {
                 .responseInfo(responseInfo).processResponse(response).build();
         log.info("api = /v1/_sendRequest , Status = SUCCESS");
         return new ResponseEntity<>(icopsResponse, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/getAuthToken", method = RequestMethod.POST)
+    public ResponseEntity<AuthToken> getAuthToken(@RequestParam("service_name") String serviceName,
+                                               @RequestParam("service_ky") String serviceKy,
+                                               @RequestParam("auth_type") String authType) {
+        log.info("api = /getAuthToken , Status = IN-PROGRESS");
+        AuthToken authToken = icopsService.generateAuthToken(serviceName, serviceKy, authType);
+        log.info("api = /getAuthToken , Status = SUCCESS");
+        return new ResponseEntity<>(authToken, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getProcessReport", method = RequestMethod.POST)
+    public ResponseEntity<ProcessResponse> getProcessReport(@RequestBody ProcessReport processReport) {
+        log.info("api = /getProcessReport , Status = IN-PROGRESS");
+        ProcessResponse processResponse = icopsService.processPoliceReport(processReport);
+        log.info("api = /getProcessReport , Status = SUCCESS");
+        return new ResponseEntity<>(processResponse, HttpStatus.OK);
     }
 }
