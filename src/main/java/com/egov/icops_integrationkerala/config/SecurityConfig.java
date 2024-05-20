@@ -24,8 +24,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        ServiceAuthenticationFilter serviceAuthenticationFilter = new ServiceAuthenticationFilter();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        AuthenticationManager authenticationManager =  authenticationConfiguration.getAuthenticationManager();
+        ServiceAuthenticationFilter serviceAuthenticationFilter = new ServiceAuthenticationFilter(authenticationManager);
         serviceAuthenticationFilter.setAuthenticationManager(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)));
 
         http
@@ -35,7 +37,8 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
