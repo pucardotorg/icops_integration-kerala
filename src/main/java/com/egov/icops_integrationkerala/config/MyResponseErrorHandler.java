@@ -3,10 +3,12 @@ package com.egov.icops_integrationkerala.config;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
 import java.io.IOException;
 
+@Component
 public class MyResponseErrorHandler extends DefaultResponseErrorHandler {
 
     @Override

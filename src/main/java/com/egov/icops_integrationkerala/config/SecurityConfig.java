@@ -1,6 +1,7 @@
 package com.egov.icops_integrationkerala.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +14,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 
 @EnableWebSecurity
+@Configuration
 public class SecurityConfig {
 
     private final CustomAuthenticationProvider authenticationProvider;
