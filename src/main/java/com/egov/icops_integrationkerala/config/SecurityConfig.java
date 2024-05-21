@@ -1,5 +1,6 @@
 package com.egov.icops_integrationkerala.config;
 
+import com.egov.icops_integrationkerala.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,8 +20,11 @@ public class SecurityConfig {
 
     private final CustomAuthenticationProvider authenticationProvider;
 
-    public SecurityConfig(CustomAuthenticationProvider authenticationProvider) {
+    private final JwtUtil jwtUtil;
+
+    public SecurityConfig(CustomAuthenticationProvider authenticationProvider, JwtUtil jwtUtil) {
         this.authenticationProvider = authenticationProvider;
+        this.jwtUtil = jwtUtil;
     }
 
     @Bean
@@ -38,7 +42,7 @@ public class SecurityConfig {
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

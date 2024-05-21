@@ -19,6 +19,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
+import java.util.Map;
+
 @Service
 @Slf4j
 public class IcopsService {
@@ -87,10 +89,8 @@ public class IcopsService {
         }
     }
 
-    public ProcessResponse processPoliceReport(ProcessReport processReport) {
-        log.info("Process Unique Id", processReport.getProcessUniqueId());
-        log.info("Process Action Status", processReport.getProcessActionStatus());
-        log.info(processReport.toString());
-        return null;
+    public ProcessReport processPoliceReport(ProcessReport processReport) {
+        log.info("Process Report is authorized");
+        return processReport;
     }
 }
