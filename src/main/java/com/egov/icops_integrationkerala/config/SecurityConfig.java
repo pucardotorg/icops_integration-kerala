@@ -1,6 +1,7 @@
 package com.egov.icops_integrationkerala.config;
 
 import com.egov.icops_integrationkerala.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,8 +21,9 @@ public class SecurityConfig {
 
     private final CustomAuthenticationProvider authenticationProvider;
 
-    private final JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
+    @Autowired
     public SecurityConfig(CustomAuthenticationProvider authenticationProvider, JwtUtil jwtUtil) {
         this.authenticationProvider = authenticationProvider;
         this.jwtUtil = jwtUtil;
