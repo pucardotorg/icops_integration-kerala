@@ -33,7 +33,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
-                .requestMatchers("/icops-integration/getAuthToken/**").permitAll()
+                .requestMatchers("/icops-integration/getAuthToken", "/icops-integration/v1/_sendRequest").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
