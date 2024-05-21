@@ -47,9 +47,9 @@ public class IcopsController {
     }
 
     @RequestMapping(value = "/getProcessReport", method = RequestMethod.POST)
-    public ResponseEntity<ProcessReport> getProcessReport(@RequestBody ProcessReport processReport) {
+    public ResponseEntity<ProcessResponse> getProcessReport(@RequestBody ProcessReport processReport) {
         log.info("api = /getProcessReport , Status = IN-PROGRESS");
-        ProcessReport response = icopsService.processPoliceReport(processReport);
+        ProcessResponse response = icopsService.processPoliceReport(processReport);
         log.info("api = /getProcessReport , Status = SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

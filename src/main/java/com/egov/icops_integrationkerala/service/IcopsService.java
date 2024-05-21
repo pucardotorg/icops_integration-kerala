@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -89,8 +90,8 @@ public class IcopsService {
         }
     }
 
-    public ProcessReport processPoliceReport(ProcessReport processReport) {
+    public ProcessResponse processPoliceReport(ProcessReport processReport) {
         log.info("Process Report is authorized");
-        return processReport;
+        return ProcessResponse.builder().acknowledgeUniqueNumber(UUID.randomUUID().toString()).acknowledgementStatus("SUCCESS").build();
     }
 }
