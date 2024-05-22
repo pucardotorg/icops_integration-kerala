@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/icops-integration")
+@RequestMapping
 @Slf4j
 public class IcopsController {
 
@@ -25,7 +25,7 @@ public class IcopsController {
         this.icopsService = icopsService;
     }
 
-    @RequestMapping(value = "/v1/_sendRequest", method = RequestMethod.POST)
+    @RequestMapping(value = "/v1/integrations/iCops/_sendRequest", method = RequestMethod.POST)
     public ResponseEntity<IcopsProcessResponse> sendPRRequest(@RequestBody IcopsProcessRequest icopsProcessRequest) {
         log.info("api = /v1/_sendRequest , Status = IN-PROGRESS");
         ProcessResponse response = icopsService.sendRequestToIcops(icopsProcessRequest);
@@ -36,7 +36,7 @@ public class IcopsController {
         return new ResponseEntity<>(icopsResponse, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/getAuthToken", method = RequestMethod.POST)
+    @RequestMapping(value = "/v1/integrations/iCops/_getAuthToken", method = RequestMethod.POST)
     public ResponseEntity<AuthToken> getAuthToken(@RequestParam("service_name") String serviceName,
                                                @RequestParam("service_ky") String serviceKy,
                                                @RequestParam("auth_type") String authType) {
@@ -46,7 +46,7 @@ public class IcopsController {
         return new ResponseEntity<>(authToken, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getProcessReport", method = RequestMethod.POST)
+    @RequestMapping(value = "/v1/integrations/iCops/_getProcessReport", method = RequestMethod.POST)
     public ResponseEntity<ProcessResponse> getProcessReport(@RequestBody ProcessReport processReport) {
         log.info("api = /getProcessReport , Status = IN-PROGRESS");
         ProcessResponse response = icopsService.processPoliceReport(processReport);
