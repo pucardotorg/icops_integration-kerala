@@ -2,14 +2,12 @@ package com.egov.icops_integrationkerala.service;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.config.MyRestTemplateConfig;
-import com.egov.icops_integrationkerala.kafka.Producer;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.AuthUtil;
 import com.egov.icops_integrationkerala.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +17,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -35,27 +32,24 @@ public class IcopsService {
 
     private AuthUtil authUtil;
 
-    private Producer producer;
-
     private final AuthenticationManager authenticationManager;
 
     private JwtUtil jwtUtil;
 
     @Autowired
     public IcopsService(MyRestTemplateConfig restTemplate, ObjectMapper objectMapper,
-                        IcopsConfiguration config, AuthUtil authUtil, Producer producer,
+                        IcopsConfiguration config, AuthUtil authUtil,
                         AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.config = config;
         this.authUtil = authUtil;
-        this.producer = producer;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
 
-    public ProcessResponse sendRequestToIcops(IcopsProcessRequest icopsProcessRequest) {
+    public ProcessResponse sendRequestToIcops(IcopsProcessRequest icopsProcessRequest) throws Exception {
         AuthToken authResponse = authUtil.authenticateAndGetToken();
         String icopsUrl = config.getIcopsUrl() + config.getProcessRequestEndPoint();
         HttpHeaders headers = new HttpHeaders();
@@ -74,19 +68,19 @@ public class IcopsService {
             return response;
         } catch (RestClientException e) {
             log.error("Error occurred when sending Process Request ", e);
-            throw new CustomException("ICOPS_PR_APP_ERR", "Error occurred when sending Process Request");
+            throw new Exception("Error occurred when sending Process Request");
         } catch (JsonProcessingException e) {
             log.error("Error occurred when logging Process response ", e);
-            throw new CustomException("ICOPS_PR_APP_ERR", "Error occurred when logging Process response");
+            throw new Exception("Error occurred when logging Process response");
         }
     }
 
-    public AuthToken generateAuthToken(String serviceName, String serviceKey, String authType) {
+    public AuthToken generateAuthToken(String serviceName, String serviceKey, String authType) throws Exception {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(serviceName, serviceKey));
             return jwtUtil.generateToken(serviceName);
         } catch (AuthenticationException e) {
-            throw new CustomException("ICOPS_PS_AUTH_ERR", "Invalid Service Credentials");
+            throw new Exception("Invalid Service Credentials");
         }
     }
 

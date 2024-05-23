@@ -1,14 +1,11 @@
 package com.egov.icops_integrationkerala.config;
 
 import lombok.Data;
-import org.egov.tracer.config.TracerConfiguration;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@Import({TracerConfiguration.class})
 public class IcopsConfiguration {
 
     @Value("${client.id}")

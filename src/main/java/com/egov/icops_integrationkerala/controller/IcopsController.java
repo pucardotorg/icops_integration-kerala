@@ -26,7 +26,7 @@ public class IcopsController {
     }
 
     @RequestMapping(value = "/v1/integrations/iCops/_sendRequest", method = RequestMethod.POST)
-    public ResponseEntity<IcopsProcessResponse> sendPRRequest(@RequestBody IcopsProcessRequest icopsProcessRequest) {
+    public ResponseEntity<IcopsProcessResponse> sendPRRequest(@RequestBody IcopsProcessRequest icopsProcessRequest) throws Exception {
         log.info("api = /v1/_sendRequest , Status = IN-PROGRESS");
         ProcessResponse response = icopsService.sendRequestToIcops(icopsProcessRequest);
         ResponseInfo responseInfo = ResponseInfo.builder().build();
@@ -39,7 +39,7 @@ public class IcopsController {
     @RequestMapping(value = "/v1/integrations/iCops/_getAuthToken", method = RequestMethod.POST)
     public ResponseEntity<AuthToken> getAuthToken(@RequestParam("service_name") String serviceName,
                                                @RequestParam("service_ky") String serviceKy,
-                                               @RequestParam("auth_type") String authType) {
+                                               @RequestParam("auth_type") String authType) throws Exception {
         log.info("api = /getAuthToken , Status = IN-PROGRESS");
         AuthToken authToken = icopsService.generateAuthToken(serviceName, serviceKy, authType);
         log.info("api = /getAuthToken , Status = SUCCESS");

@@ -3,7 +3,6 @@ package com.egov.icops_integrationkerala.util;
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.AuthToken;
 import lombok.extern.slf4j.Slf4j;
-import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +29,7 @@ public class AuthUtil {
         this.config = config;
     }
 
-    public AuthToken authenticateAndGetToken() {
+    public AuthToken authenticateAndGetToken() throws Exception {
         // Define the URL for authentication
         String authUrl = config.getIcopsUrl() + config.getAuthEndpoint();
 
@@ -52,7 +51,7 @@ public class AuthUtil {
             return responseEntity.getBody();
         } catch (RestClientException e) {
             log.error("Error occurred at authentication ", e);
-            throw new CustomException("ICOPS_AUTH_APP_ERR", "Error occurred when authenticating ICops");
+            throw new Exception("Error occurred when authenticating ICops");
         }
     }
 }
