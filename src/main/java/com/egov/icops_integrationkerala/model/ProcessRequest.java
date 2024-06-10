@@ -1,9 +1,11 @@
 package com.egov.icops_integrationkerala.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class ProcessRequest {
 
     @JsonProperty("processCaseno")

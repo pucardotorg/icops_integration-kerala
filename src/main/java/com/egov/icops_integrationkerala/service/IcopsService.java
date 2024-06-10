@@ -4,6 +4,7 @@ import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.config.MyRestTemplateConfig;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.AuthUtil;
+import com.egov.icops_integrationkerala.util.FileStorageUtil;
 import com.egov.icops_integrationkerala.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -36,32 +38,36 @@ public class IcopsService {
 
     private JwtUtil jwtUtil;
 
+    private FileStorageUtil fileStorageUtil;
+
     @Autowired
     public IcopsService(MyRestTemplateConfig restTemplate, ObjectMapper objectMapper,
                         IcopsConfiguration config, AuthUtil authUtil,
-                        AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+                        AuthenticationManager authenticationManager, JwtUtil jwtUtil, FileStorageUtil fileStorageUtil) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.config = config;
         this.authUtil = authUtil;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.fileStorageUtil = fileStorageUtil;
     }
 
 
-    public ProcessResponse sendRequestToIcops(IcopsProcessRequest icopsProcessRequest) throws Exception {
+    public ChannelMessage sendRequestToIcops(SendSummonsRequest summonsRequest) throws Exception {
+        ProcessRequest processRequest = getProcessRequest(summonsRequest.getTaskSummon());
         AuthToken authResponse = authUtil.authenticateAndGetToken();
         String icopsUrl = config.getIcopsUrl() + config.getProcessRequestEndPoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + authResponse.getAccessToken());
-        HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(icopsProcessRequest.getProcessRequest(), headers);
+        HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(processRequest, headers);
         try {
-            log.info("Request Body: " + objectMapper.writeValueAsString(icopsProcessRequest.getProcessRequest()));
+            log.info("Request Body: " + objectMapper.writeValueAsString(processRequest));
             // Send the request and get the response
             ResponseEntity<Object> responseEntity =
                     restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, Object.class);
-            ProcessResponse response = objectMapper.convertValue(responseEntity.getBody(), ProcessResponse.class);
+            ChannelMessage response = objectMapper.convertValue(responseEntity.getBody(), ChannelMessage.class);
             // Print the response body and status code
             log.info("Response Body: " + objectMapper.writeValueAsString(responseEntity.getBody()));
             log.info("Status Code: " + responseEntity.getStatusCode());
@@ -75,6 +81,30 @@ public class IcopsService {
         }
     }
 
+    private ProcessRequest getProcessRequest(TaskSummon taskSummon) {
+        String docFileString = fileStorageUtil.getFileFromFileStoreService(taskSummon.getSummonsDocument().getFileStoreId(),
+                config.getEgovStateTenantId());
+        return ProcessRequest.builder()
+                .processCaseno(taskSummon.getCaseDetails().getCaseId())
+                .processDoc(docFileString)
+                .processFirYear(taskSummon.getCaseDetails().getCaseYear())
+                .processUniqueId(taskSummon.getSummonDetails().getSummonId())
+                .processCourtName(taskSummon.getCaseDetails().getCourtName())
+                .processJudge(taskSummon.getCaseDetails().getJudgeName())
+                .processIssueDate(LocalDate.now().toString())
+                .processNextHearingDate(taskSummon.getCaseDetails().getHearingDate())
+                .processRespondentName(taskSummon.getRespondentDetails().getName())
+                .processRespondentGender(taskSummon.getRespondentDetails().getGender())
+                .processRespondentAge(String.valueOf(taskSummon.getRespondentDetails().getAge()))
+                .processRespondentRelativeName(taskSummon.getRespondentDetails().getRelativeName())
+                .processRespondentRelation(taskSummon.getRespondentDetails().getRelationWithRelative())
+                .processReceiverAddress(taskSummon.getRespondentDetails().getAddress().toString())
+                .processCourtCode(taskSummon.getCaseDetails().getCourtCode())
+                .processReceiverVillage(taskSummon.getRespondentDetails().getAddress().getCity())
+                .processReceiverPincode(taskSummon.getRespondentDetails().getAddress().getPinCode())
+                .build();
+    }
+
     public AuthToken generateAuthToken(String serviceName, String serviceKey, String authType) throws Exception {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(serviceName, serviceKey));
@@ -84,8 +114,8 @@ public class IcopsService {
         }
     }
 
-    public ProcessResponse processPoliceReport(ProcessReport processReport) {
+    public ChannelMessage processPoliceReport(ProcessReport processReport) {
         log.info("Process Report is authorized");
-        return ProcessResponse.builder().acknowledgeUniqueNumber(UUID.randomUUID().toString()).acknowledgementStatus("SUCCESS").build();
+        return ChannelMessage.builder().acknowledgeUniqueNumber(UUID.randomUUID().toString()).acknowledgementStatus("SUCCESS").build();
     }
 }

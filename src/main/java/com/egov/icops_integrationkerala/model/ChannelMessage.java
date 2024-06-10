@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ProcessResponse {
+public class ChannelMessage {
 
     @JsonProperty("acknowledgeUniquenumber")
     private String acknowledgeUniqueNumber;

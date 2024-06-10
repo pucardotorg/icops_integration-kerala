@@ -12,6 +12,6 @@ public class IcopsProcessResponse {
     @JsonProperty("ResponseInfo")
     private ResponseInfo responseInfo;
 
-    @JsonProperty("ProcessResponse")
-    private ProcessResponse processResponse;
+    @JsonProperty("channelMessage")
+    private ChannelMessage channelMessage;
 }

@@ -8,6 +8,11 @@ import org.springframework.stereotype.Component;
 @Data
 public class IcopsConfiguration {
 
+    //Tenant Id
+    @Value("${egov-state-level-tenant-id}")
+    private String egovStateTenantId;
+
+    //TCops Config data
     @Value("${client.id}")
     private String clientId;
 
@@ -25,4 +30,11 @@ public class IcopsConfiguration {
 
     @Value("${process.request.endpoint}")
     private String processRequestEndPoint;
+
+    // File Store Service
+    @Value("${egov.file.store.host}")
+    private String fileStoreHost;
+
+    @Value("${egov.file.store.search.endpoint}")
+    private String fileStoreEndPoint;
 }

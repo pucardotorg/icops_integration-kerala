@@ -26,12 +26,12 @@ public class IcopsController {
     }
 
     @RequestMapping(value = "/v1/integrations/iCops/_sendRequest", method = RequestMethod.POST)
-    public ResponseEntity<IcopsProcessResponse> sendPRRequest(@RequestBody IcopsProcessRequest icopsProcessRequest) throws Exception {
+    public ResponseEntity<IcopsProcessResponse> sendPRRequest(@RequestBody SendSummonsRequest summonsRequest) throws Exception {
         log.info("api = /v1/_sendRequest , Status = IN-PROGRESS");
-        ProcessResponse response = icopsService.sendRequestToIcops(icopsProcessRequest);
+        ChannelMessage response = icopsService.sendRequestToIcops(summonsRequest);
         ResponseInfo responseInfo = ResponseInfo.builder().build();
         IcopsProcessResponse icopsResponse = IcopsProcessResponse.builder()
-                .responseInfo(responseInfo).processResponse(response).build();
+                .responseInfo(responseInfo).channelMessage(response).build();
         log.info("api = /v1/_sendRequest , Status = SUCCESS");
         return new ResponseEntity<>(icopsResponse, HttpStatus.CREATED);
     }
@@ -47,9 +47,9 @@ public class IcopsController {
     }
 
     @RequestMapping(value = "/v1/integrations/iCops/_getProcessReport", method = RequestMethod.POST)
-    public ResponseEntity<ProcessResponse> getProcessReport(@RequestBody ProcessReport processReport) {
+    public ResponseEntity<ChannelMessage> getProcessReport(@RequestBody ProcessReport processReport) {
         log.info("api = /getProcessReport , Status = IN-PROGRESS");
-        ProcessResponse response = icopsService.processPoliceReport(processReport);
+        ChannelMessage response = icopsService.processPoliceReport(processReport);
         log.info("api = /getProcessReport , Status = SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
