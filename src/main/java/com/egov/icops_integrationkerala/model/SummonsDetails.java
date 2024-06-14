@@ -22,6 +22,12 @@ public class SummonsDetails {
     @JsonProperty("issueDate")
     private LocalDate issueDate;
 
-    @JsonProperty("tenantId")
-    private String tenantId;
+    @JsonProperty("docType")
+    private String docType;
+
+    @JsonProperty("docSubType")
+    private String docSubType;
+
+    @JsonProperty("partyType")
+    private String partyType;
 }

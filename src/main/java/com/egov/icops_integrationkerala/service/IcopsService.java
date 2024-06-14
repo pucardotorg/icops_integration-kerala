@@ -2,6 +2,7 @@ package com.egov.icops_integrationkerala.service;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.config.MyRestTemplateConfig;
+import com.egov.icops_integrationkerala.enrichment.IcopsEnrichment;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.AuthUtil;
 import com.egov.icops_integrationkerala.util.FileStorageUtil;
@@ -40,10 +41,12 @@ public class IcopsService {
 
     private FileStorageUtil fileStorageUtil;
 
+    private final IcopsEnrichment icopsEnrichment;
+
     @Autowired
     public IcopsService(MyRestTemplateConfig restTemplate, ObjectMapper objectMapper,
                         IcopsConfiguration config, AuthUtil authUtil,
-                        AuthenticationManager authenticationManager, JwtUtil jwtUtil, FileStorageUtil fileStorageUtil) {
+                        AuthenticationManager authenticationManager, JwtUtil jwtUtil, FileStorageUtil fileStorageUtil, IcopsEnrichment icopsEnrichment) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.config = config;
@@ -51,6 +54,7 @@ public class IcopsService {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.fileStorageUtil = fileStorageUtil;
+        this.icopsEnrichment = icopsEnrichment;
     }
 
 
@@ -84,25 +88,31 @@ public class IcopsService {
     private ProcessRequest getProcessRequest(TaskSummon taskSummon) {
         String docFileString = fileStorageUtil.getFileFromFileStoreService(taskSummon.getSummonsDocument().getFileStoreId(),
                 config.getEgovStateTenantId());
-        return ProcessRequest.builder()
+        ProcessRequest processRequest = ProcessRequest.builder()
                 .processCaseno(taskSummon.getCaseDetails().getCaseId())
                 .processDoc(docFileString)
                 .processFirYear(taskSummon.getCaseDetails().getCaseYear())
                 .processUniqueId(taskSummon.getSummonDetails().getSummonId())
                 .processCourtName(taskSummon.getCaseDetails().getCourtName())
                 .processJudge(taskSummon.getCaseDetails().getJudgeName())
-                .processIssueDate(LocalDate.now().toString())
+                .processIssueDate(taskSummon.getSummonDetails().getIssueDate().toString())
                 .processNextHearingDate(taskSummon.getCaseDetails().getHearingDate())
                 .processRespondentName(taskSummon.getRespondentDetails().getName())
                 .processRespondentGender(taskSummon.getRespondentDetails().getGender())
                 .processRespondentAge(String.valueOf(taskSummon.getRespondentDetails().getAge()))
                 .processRespondentRelativeName(taskSummon.getRespondentDetails().getRelativeName())
                 .processRespondentRelation(taskSummon.getRespondentDetails().getRelationWithRelative())
-                .processReceiverAddress(taskSummon.getRespondentDetails().getAddress().toString())
                 .processCourtCode(taskSummon.getCaseDetails().getCourtCode())
-                .processReceiverVillage(taskSummon.getRespondentDetails().getAddress().getCity())
-                .processReceiverPincode(taskSummon.getRespondentDetails().getAddress().getPinCode())
+                .processReceiverAddress(taskSummon.getRespondentDetails().getAddress())
+                .processReceiverState(taskSummon.getRespondentDetails().getState())
+                .processReceiverDistrict(taskSummon.getRespondentDetails().getDistrict())
+                .processReceiverPincode(taskSummon.getRespondentDetails().getPinCode())
+                .processPartyType(taskSummon.getSummonDetails().getPartyType())
+                .processDocType(taskSummon.getSummonDetails().getDocType())
+                .processDocSubType(taskSummon.getSummonDetails().getDocSubType())
                 .build();
+        icopsEnrichment.enrichPoliceStationDetails(processRequest);
+        return processRequest;
     }
 
     public AuthToken generateAuthToken(String serviceName, String serviceKey, String authType) throws Exception {

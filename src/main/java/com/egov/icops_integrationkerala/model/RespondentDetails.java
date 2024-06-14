@@ -34,7 +34,16 @@ public class RespondentDetails {
 
     @JsonProperty("address")
     @Valid
-    private Address address;
+    private String address;
+
+    @JsonProperty("state")
+    private String state;
+
+    @JsonProperty("district")
+    private String district;
+
+    @JsonProperty("pinCode")
+    private String pinCode;
 
     @JsonProperty("relativeName")
     private String relativeName;

@@ -134,4 +134,7 @@ public class ProcessRequest {
 
     @JsonProperty("processDoc")
     private String processDoc;
+
+    @JsonProperty("processOrigin")
+    private String processOrigin;
 }
