@@ -30,6 +30,7 @@ public class AuthUtil {
     }
 
     public AuthToken authenticateAndGetToken() throws Exception {
+        log.info("Getting Auth Token from Icop");
         // Define the URL for authentication
         String authUrl = config.getIcopsUrl() + config.getAuthEndpoint();
 

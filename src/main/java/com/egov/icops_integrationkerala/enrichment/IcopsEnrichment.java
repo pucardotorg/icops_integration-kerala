@@ -16,6 +16,7 @@ public class IcopsEnrichment {
     }
 
     public void enrichPoliceStationDetails(ProcessRequest processRequest) {
+        log.info("Enriching Process Request Data for Case No: {}", processRequest.getProcessCaseno());
         processRequest.setProcessDocTypeCode("2");
         processRequest.setProcessDocSubTypeCode("2000020");
         processRequest.setProcessPoliceStationCode("15290042");
