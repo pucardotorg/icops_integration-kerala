@@ -23,5 +23,6 @@ public class IcopsEnrichment {
         processRequest.setProcessPoliceStationName("PUDUKKADU");
         processRequest.setProcessCino("KLER550001232023");
         processRequest.setProcessOrigin("DRISTI");
+        processRequest.setProcessCourtCode("KLTR13");
     }
 }

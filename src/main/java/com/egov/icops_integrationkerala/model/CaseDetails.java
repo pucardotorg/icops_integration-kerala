@@ -22,8 +22,8 @@ public class CaseDetails {
     @JsonProperty("caseYear")
     private String caseYear;
 
-    @JsonProperty("docType")
-    private String docType;
+    @JsonProperty("caseCharge")
+    private String caseCharge;
 
     @JsonProperty("hearingDate")
     private String hearingDate;

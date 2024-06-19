@@ -102,7 +102,6 @@ public class IcopsService {
                 .processRespondentAge(String.valueOf(taskSummon.getRespondentDetails().getAge()))
                 .processRespondentRelativeName(taskSummon.getRespondentDetails().getRelativeName())
                 .processRespondentRelation(taskSummon.getRespondentDetails().getRelationWithRelative())
-                .processCourtCode(taskSummon.getCaseDetails().getCourtCode())
                 .processReceiverAddress(taskSummon.getRespondentDetails().getAddress())
                 .processReceiverState(taskSummon.getRespondentDetails().getState())
                 .processReceiverDistrict(taskSummon.getRespondentDetails().getDistrict())
