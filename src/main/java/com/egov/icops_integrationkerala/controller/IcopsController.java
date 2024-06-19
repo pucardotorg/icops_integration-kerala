@@ -53,4 +53,15 @@ public class IcopsController {
         log.info("api = /getProcessReport , Status = SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/v2/integrations/iCops/_sendRequest", method = RequestMethod.POST)
+    public ResponseEntity<IcopsProcessResponse> sendPRRequest(@RequestBody IcopsProcessRequest icopsProcessRequest) throws Exception {
+        log.info("api = /v2/_sendRequest , Status = IN-PROGRESS");
+        ChannelMessage response = icopsService.sendRequestToIcopsV2(icopsProcessRequest.getProcessRequest());
+        ResponseInfo responseInfo = ResponseInfo.builder().build();
+        IcopsProcessResponse icopsResponse = IcopsProcessResponse.builder()
+                .responseInfo(responseInfo).channelMessage(response).build();
+        log.info("api = /v2/_sendRequest , Status = SUCCESS");
+        return new ResponseEntity<>(icopsResponse, HttpStatus.CREATED);
+    }
 }

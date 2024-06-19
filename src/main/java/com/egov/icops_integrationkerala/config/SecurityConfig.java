@@ -39,7 +39,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
-                .requestMatchers("/v1/integrations/iCops/_getAuthToken", "/v1/integrations/iCops/_sendRequest").permitAll()
+                .requestMatchers("/v1/integrations/iCops/_getAuthToken", "/v1/integrations/iCops/_sendRequest", "/v2/integrations/iCops/_sendRequest").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

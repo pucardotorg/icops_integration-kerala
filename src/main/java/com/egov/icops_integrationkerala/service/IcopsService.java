@@ -105,4 +105,9 @@ public class IcopsService {
         log.info("Process Report is authorized");
         return ChannelMessage.builder().acknowledgeUniqueNumber(UUID.randomUUID().toString()).acknowledgementStatus("SUCCESS").build();
     }
+
+    public ChannelMessage sendRequestToIcopsV2(ProcessRequest processRequest) throws Exception {
+        AuthToken authResponse = authUtil.authenticateAndGetToken();
+        return processRequestUtil.callProcessRequest(authResponse, processRequest);
+    }
 }
