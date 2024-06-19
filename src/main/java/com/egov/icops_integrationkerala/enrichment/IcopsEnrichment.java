@@ -1,5 +1,6 @@
 package com.egov.icops_integrationkerala.enrichment;
 
+import com.egov.icops_integrationkerala.model.PartyData;
 import com.egov.icops_integrationkerala.model.ProcessRequest;
 import com.egov.icops_integrationkerala.util.MdmsUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,5 +25,8 @@ public class IcopsEnrichment {
         processRequest.setProcessCino("KLER550001232023");
         processRequest.setProcessOrigin("DRISTI");
         processRequest.setProcessCourtCode("KLTR13");
+        PartyData partyData = new PartyData();
+        partyData.setSpartyAge("15");
+        processRequest.setSpartyData(partyData);
     }
 }

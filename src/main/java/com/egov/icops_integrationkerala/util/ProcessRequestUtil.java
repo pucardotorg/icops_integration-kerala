@@ -51,9 +51,6 @@ public class ProcessRequestUtil {
             log.error("Error occurred when sending Process Request ", e);
             log.error(e.getMessage());
             throw new Exception("Error occurred when sending Process Request");
-        } catch (JsonProcessingException e) {
-            log.error("Error occurred when logging Process response ", e);
-            throw new Exception("Error occurred when logging Process response");
         }
     }
 }

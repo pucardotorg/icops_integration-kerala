@@ -14,8 +14,8 @@ public class ProcessRequest {
     @JsonProperty("processUniqueId")
     private String processUniqueId;
 
-    //@JsonProperty("sparty_data")
-    //private PartyData sparty_data;
+    @JsonProperty("sparty_data")
+    private PartyData spartyData;
 
     @JsonProperty("processCourtCode")
     private String processCourtCode;
