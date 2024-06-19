@@ -3,6 +3,7 @@ package com.egov.icops_integrationkerala.enrichment;
 import com.egov.icops_integrationkerala.model.PartyData;
 import com.egov.icops_integrationkerala.model.ProcessRequest;
 import com.egov.icops_integrationkerala.util.MdmsUtil;
+import com.egov.icops_integrationkerala.util.NullToEmptyConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +13,11 @@ public class IcopsEnrichment {
 
     private final MdmsUtil mdmsUtil;
 
-    public IcopsEnrichment(MdmsUtil mdmsUtil) {
+    private final NullToEmptyConverter converter;
+
+    public IcopsEnrichment(MdmsUtil mdmsUtil, NullToEmptyConverter converter) {
         this.mdmsUtil = mdmsUtil;
+        this.converter = converter;
     }
 
     public void enrichPoliceStationDetails(ProcessRequest processRequest) {
@@ -38,6 +42,8 @@ public class IcopsEnrichment {
         processRequest.setCourtBenchName("Principal Sub Judge");
         PartyData partyData = new PartyData();
         partyData.setSpartyAge("15");
+        converter.convertNullFieldsToEmptyString(partyData);
         processRequest.setSpartyData(partyData);
+        converter.convertNullFieldsToEmptyString(processRequest);
     }
 }
