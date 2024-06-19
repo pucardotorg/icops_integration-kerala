@@ -39,6 +39,7 @@ public class IcopsEnrichment {
         processRequest.setCaseListedDate("2024-05-08");
         processRequest.setCnrNo("KLER550001232023");
         processRequest.setCourtBenchCd("1");
+        processRequest.setProcessInvAgency("Police");
         processRequest.setCourtBenchName("Principal Sub Judge");
         PartyData partyData = new PartyData();
         partyData.setSpartyAge("15");
