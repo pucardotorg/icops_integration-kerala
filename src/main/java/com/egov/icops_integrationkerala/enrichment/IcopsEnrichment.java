@@ -41,6 +41,7 @@ public class IcopsEnrichment {
         processRequest.setCourtBenchCd("1");
         processRequest.setProcessInvAgency("Police");
         processRequest.setCourtBenchName("Principal Sub Judge");
+        processRequest.setProcessReceiverType("W");
         PartyData partyData = new PartyData();
         partyData.setSpartyAge("15");
         converter.convertNullFieldsToEmptyString(partyData);
