@@ -11,11 +11,16 @@ import com.egov.icops_integrationkerala.util.ProcessRequestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 import java.util.UUID;
 
@@ -108,6 +113,24 @@ public class IcopsService {
 
     public ChannelMessage sendRequestToIcopsV2(ProcessRequest processRequest) throws Exception {
         AuthToken authResponse = authUtil.authenticateAndGetToken();
-        return processRequestUtil.callProcessRequest(authResponse, processRequest);
+        String icopsUrl = config.getIcopsUrl() + config.getProcessRequestEndPoint();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + authResponse.getAccessToken());
+        HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(processRequest, headers);
+        try {
+            log.error("Request Body: {}", objectMapper.writeValueAsString(processRequest));
+            // Send the request and get the response
+            ResponseEntity<Object> responseEntity =
+                    restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, Object.class);
+            ChannelMessage response = objectMapper.convertValue(responseEntity.getBody(), ChannelMessage.class);
+            // Print the response body and status code
+            log.info("Status Code: {}", responseEntity.getStatusCode());
+            log.info("Response Body: {}", responseEntity.getBody());
+            return response;
+        } catch (RestClientException e) {
+            log.error("Error occurred when sending Process Request ", e);
+            throw new Exception("Error occurred when sending Process Request");
+        }
     }
 }
