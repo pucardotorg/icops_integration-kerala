@@ -17,7 +17,7 @@ public class SendSummonsRequest {
     @Valid
     private RequestInfo requestInfo = null;
 
-    @JsonProperty("taskSummon")
+    @JsonProperty("TaskSummon")
     @Valid
     private TaskSummon taskSummon;
 }
