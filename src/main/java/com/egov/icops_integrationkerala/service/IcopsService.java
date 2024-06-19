@@ -70,7 +70,6 @@ public class IcopsService {
         ProcessRequest processRequest = ProcessRequest.builder()
                 .processCaseno(taskSummon.getCaseDetails().getCaseId())
                 .processDoc(docFileString)
-                .processFirYear(taskSummon.getCaseDetails().getCaseYear())
                 .processUniqueId(taskSummon.getSummonDetails().getSummonId())
                 .processCourtName(taskSummon.getCaseDetails().getCourtName())
                 .processJudge(taskSummon.getCaseDetails().getJudgeName())

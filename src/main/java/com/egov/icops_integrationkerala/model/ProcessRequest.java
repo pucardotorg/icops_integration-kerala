@@ -1,11 +1,13 @@
 package com.egov.icops_integrationkerala.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProcessRequest {
 
     @JsonProperty("processCaseno")
@@ -31,6 +33,18 @@ public class ProcessRequest {
 
     @JsonProperty("processJudge")
     private String processJudge;
+
+    @JsonProperty("caseListedDate")
+    private String caseListedDate;
+
+    @JsonProperty("orderSignedDate")
+    private String orderSignedDate;
+
+    @JsonProperty("courtBenchCd")
+    private String courtBenchCd;
+
+    @JsonProperty("courtBenchName")
+    private String courtBenchName;
 
     @JsonProperty("processPoliceStationCode")
     private String processPoliceStationCode;
@@ -128,6 +142,9 @@ public class ProcessRequest {
 
     @JsonProperty("processCino")
     private String processCino;
+
+    @JsonProperty("cnrNo")
+    private String cnrNo;
 
     @JsonProperty("processReceiverType")
     private String processReceiverType;
