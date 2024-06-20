@@ -70,16 +70,16 @@ public class IcopsEnrichment {
         processRequest.setCnrNo("KLER550001232023");
         processRequest.setProcessOrigin("DRISTI");
         processRequest.setProcessCourtCode("KLTR13");
-        //processRequest.setProcessFirYear("2019");
-        //processRequest.setProcessFirPScode("15290042");
-        //processRequest.setProcessFirSrlno("1268");
+        processRequest.setProcessFirYear("2019");
+        processRequest.setProcessFirPScode("15290042");
+        processRequest.setProcessFirSrlno("1268");
         processRequest.setProcessPartyNumber("10");
         processRequest.setProcessReceiverTaluka("Mukundapuram");
-        processRequest.setProcessRespondntType("W");
+        //processRequest.setProcessRespondantType("W");
         processRequest.setOrderSignedDate(converter.convertDate("2024-04-29"));
         processRequest.setCaseListedDate(converter.convertDate("2024-04-01"));
         //processRequest.setCourtBenchCd("1");
-        processRequest.setProcessInvAgency("Police");
+        //processRequest.setProcessInvAgency("Police");
         //processRequest.setCourtBenchName("Principal Sub Judge");
         processRequest.setProcessReceiverType("W");
     }

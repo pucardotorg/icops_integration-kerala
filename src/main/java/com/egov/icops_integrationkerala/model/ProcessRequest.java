@@ -100,17 +100,17 @@ public class ProcessRequest {
     @JsonProperty("processReceiverEmail")
     private String processReceiverEmail;
 
-    @JsonProperty("processInvAgency")
-    private String processInvAgency;
+    //@JsonProperty("processInvAgency")
+    //private String processInvAgency;
 
-    //@JsonProperty("processFirPScode")
-    //private String processFirPScode;
+    @JsonProperty("processFirPScode")
+    private String processFirPScode;
 
-    //@JsonProperty("processFirSrlno")
-    //private String processFirSrlno;
+    @JsonProperty("processFirSrlno")
+    private String processFirSrlno;
 
-    //@JsonProperty("processFirYear")
-    //private String processFirYear;
+    @JsonProperty("processFirYear")
+    private String processFirYear;
 
     @JsonProperty("processRespondentName")
     private String processRespondentName;
@@ -133,8 +133,8 @@ public class ProcessRequest {
     @JsonProperty("processPartyType")
     private String processPartyType;
 
-    @JsonProperty("processRespondantType")
-    private String processRespondntType;
+    //@JsonProperty("processRespondantType")
+    //private String processRespondantType;
 
     @JsonProperty("processCino")
     private String processCino;
