@@ -44,4 +44,11 @@ public class IcopsConfiguration {
 
     @Value("${egov.mdms.search.endpoint}")
     private String mdmsEndPoint;
+
+    //Summons
+    @Value("${egov.summons.host}")
+    private String summonsHost;
+
+    @Value("${egov.summons.update.endpoint}")
+    private String summonsUpdateEndPoint;
 }

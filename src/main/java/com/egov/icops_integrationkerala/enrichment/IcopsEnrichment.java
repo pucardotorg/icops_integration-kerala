@@ -1,13 +1,12 @@
 package com.egov.icops_integrationkerala.enrichment;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
-import com.egov.icops_integrationkerala.model.PartyData;
-import com.egov.icops_integrationkerala.model.ProcessRequest;
-import com.egov.icops_integrationkerala.model.TaskSummon;
+import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.DateStringConverter;
 import com.egov.icops_integrationkerala.util.FileStorageUtil;
 import com.egov.icops_integrationkerala.util.MdmsUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.egov.tracer.model.CustomException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -82,5 +81,38 @@ public class IcopsEnrichment {
         //processRequest.setProcessInvAgency("Police");
         //processRequest.setCourtBenchName("Principal Sub Judge");
         processRequest.setProcessReceiverType("W");
+    }
+
+    public ChannelReport getChannelReport(ProcessReport processReport) {
+        ChannelReport channelReport = new ChannelReport();
+        channelReport.setSummonId(processReport.getProcessUniqueId());
+        if (processReport.getProcessActionStatus().equalsIgnoreCase("SERVED")) {
+            channelReport.setDeliveryStatus("DELIVERED_SUCCESSFULLY");
+        } else if (processReport.getProcessActionStatus().equalsIgnoreCase("NOT_SERVED") ||
+                processReport.getProcessActionStatus().equalsIgnoreCase("NOT_ARRESTED") ) {
+            channelReport.setDeliveryStatus("SUMMONS_NOT_SERVED");
+        } else if (processReport.getProcessActionStatus().equalsIgnoreCase("RETURNED")) {
+            channelReport.setDeliveryStatus("SUMMONS_FAILED");
+        } else {
+            channelReport.setDeliveryStatus("SUMMONS_STATUS_UNKNOWN");
+        }
+        channelReport.setAdditionalFields(convertProcessReportData(processReport));
+        return channelReport;
+    }
+
+    private AdditionalFields convertProcessReportData(ProcessReport processReport) {
+        AdditionalFields additionalFields = new AdditionalFields();
+        try {
+            for (java.lang.reflect.Field field : processReport.getClass().getDeclaredFields()) {
+                Object value = field.get(processReport);
+                if (value != null) {
+                    additionalFields.addFieldsItem(new Field(field.getName(), value.toString()));
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred when converting process Report data", e);
+            throw new CustomException("PROCESS_REPORT_DATA_CONVERT_ERROR", "Error occurred when converting process Report data");
+        }
+        return additionalFields;
     }
 }

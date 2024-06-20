@@ -7,11 +7,11 @@ import org.egov.common.contract.request.RequestInfo;
 
 @Data
 @Builder
-public class IcopsProcessRequest {
+public class UpdateSummonsRequest {
 
     @JsonProperty("RequestInfo")
     private RequestInfo requestInfo;
 
-    @JsonProperty("ProcessRequest")
-    private ProcessRequest processRequest;
+    @JsonProperty("ChannelReport")
+    private ChannelReport channelReport;
 }

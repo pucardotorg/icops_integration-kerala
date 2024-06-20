@@ -7,6 +7,7 @@ import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.AuthUtil;
 import com.egov.icops_integrationkerala.util.JwtUtil;
 import com.egov.icops_integrationkerala.util.ProcessRequestUtil;
+import com.egov.icops_integrationkerala.util.SummonsUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +40,12 @@ public class IcopsService {
 
     private final ProcessRequestUtil processRequestUtil;
 
+    private final SummonsUtil summonsUtil;
+
     @Autowired
     public IcopsService(MyRestTemplateConfig restTemplate, ObjectMapper objectMapper,
                         IcopsConfiguration config, AuthUtil authUtil, AuthenticationManager authenticationManager,
-                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil) {
+                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.config = config;
@@ -51,6 +54,7 @@ public class IcopsService {
         this.jwtUtil = jwtUtil;
         this.icopsEnrichment = icopsEnrichment;
         this.processRequestUtil = processRequestUtil;
+        this.summonsUtil = summonsUtil;
     }
 
 
@@ -69,8 +73,10 @@ public class IcopsService {
         }
     }
 
-    public ChannelMessage processPoliceReport(ProcessReport processReport) {
-        log.info("Process Report is authorized");
-        return ChannelMessage.builder().acknowledgeUniqueNumber(UUID.randomUUID().toString()).acknowledgementStatus("SUCCESS").build();
+    public ChannelMessage processPoliceReport(IcopsProcessReport icopsProcessReport) {
+        ChannelReport channelReport = icopsEnrichment.getChannelReport(icopsProcessReport.getProcessReport());
+        UpdateSummonsRequest request = UpdateSummonsRequest.builder()
+                .requestInfo(icopsProcessReport.getRequestInfo()).channelReport(channelReport).build();
+        return summonsUtil.updateSummonsDeliveryStatus(request);
     }
 }
