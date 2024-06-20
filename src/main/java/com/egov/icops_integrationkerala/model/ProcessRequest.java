@@ -133,8 +133,8 @@ public class ProcessRequest {
     @JsonProperty("processPartyType")
     private String processPartyType;
 
-    //@JsonProperty("processRespondantType")
-    //private String processRespondantType;
+    @JsonProperty("processRespondantType")
+    private String processRespondantType;
 
     @JsonProperty("processCino")
     private String processCino;

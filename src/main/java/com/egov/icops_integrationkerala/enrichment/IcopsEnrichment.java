@@ -75,7 +75,7 @@ public class IcopsEnrichment {
         processRequest.setProcessFirSrlno("1268");
         processRequest.setProcessPartyNumber("10");
         processRequest.setProcessReceiverTaluka("Mukundapuram");
-        //processRequest.setProcessRespondantType("W");
+        processRequest.setProcessRespondantType("W");
         processRequest.setOrderSignedDate(converter.convertDate("2024-04-29"));
         processRequest.setCaseListedDate(converter.convertDate("2024-04-01"));
         //processRequest.setCourtBenchCd("1");
