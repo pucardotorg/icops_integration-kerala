@@ -41,7 +41,7 @@ public class IcopsEnrichment {
                 .processCourtName(taskSummon.getCaseDetails().getCourtName())
                 .processJudge(taskSummon.getCaseDetails().getJudgeName())
                 .processIssueDate(converter.convertDate(taskSummon.getSummonDetails().getIssueDate()))
-                .processNextHearingDate(taskSummon.getCaseDetails().getHearingDate())
+                .processNextHearingDate(converter.convertDate(taskSummon.getCaseDetails().getHearingDate()))
                 .processRespondentName(taskSummon.getRespondentDetails().getName())
                 .processRespondentGender(taskSummon.getRespondentDetails().getGender())
                 .processRespondentAge(String.valueOf(taskSummon.getRespondentDetails().getAge()))
