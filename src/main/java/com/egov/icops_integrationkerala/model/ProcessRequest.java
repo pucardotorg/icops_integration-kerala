@@ -103,14 +103,14 @@ public class ProcessRequest {
     @JsonProperty("processInvAgency")
     private String processInvAgency;
 
-    @JsonProperty("processFirPScode")
-    private String processFirPScode;
+    //@JsonProperty("processFirPScode")
+    //private String processFirPScode;
 
-    @JsonProperty("processFirSrlno")
-    private String processFirSrlno;
+    //@JsonProperty("processFirSrlno")
+    //private String processFirSrlno;
 
-    @JsonProperty("processFirYear")
-    private String processFirYear;
+    //@JsonProperty("processFirYear")
+    //private String processFirYear;
 
     @JsonProperty("processRespondentName")
     private String processRespondentName;
