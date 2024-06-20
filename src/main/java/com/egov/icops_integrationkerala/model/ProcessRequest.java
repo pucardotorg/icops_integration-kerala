@@ -16,9 +16,6 @@ public class ProcessRequest {
     @JsonProperty("processUniqueId")
     private String processUniqueId;
 
-    //@JsonProperty("sparty_data")
-    //private PartyData spartyData;
-
     @JsonProperty("processCourtCode")
     private String processCourtCode;
 
@@ -40,11 +37,11 @@ public class ProcessRequest {
     @JsonProperty("orderSignedDate")
     private String orderSignedDate;
 
-    @JsonProperty("courtBenchCd")
-    private String courtBenchCd;
+    //@JsonProperty("courtBenchCd")
+    //private String courtBenchCd;
 
-    @JsonProperty("courtBenchName")
-    private String courtBenchName;
+    //@JsonProperty("courtBenchName")
+    //private String courtBenchName;
 
     @JsonProperty("processPoliceStationCode")
     private String processPoliceStationCode;
@@ -72,7 +69,6 @@ public class ProcessRequest {
 
     @JsonProperty("processReceiverWard")
     private String processReceiverWard;
-
 
     @JsonProperty("processReceiverVillage1")
     private String processReceiverVillage1;

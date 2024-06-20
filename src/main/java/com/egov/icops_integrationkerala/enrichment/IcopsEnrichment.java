@@ -67,6 +67,7 @@ public class IcopsEnrichment {
         processRequest.setProcessPoliceStationCode("15290042");
         processRequest.setProcessPoliceStationName("PUDUKKADU");
         processRequest.setProcessCino("KLER550001232023");
+        processRequest.setCnrNo("KLER550001232023");
         processRequest.setProcessOrigin("DRISTI");
         processRequest.setProcessCourtCode("KLTR13");
         processRequest.setProcessFirYear("2019");
@@ -77,13 +78,9 @@ public class IcopsEnrichment {
         processRequest.setProcessRespondntType("W");
         processRequest.setOrderSignedDate(converter.convertDate("2024-04-29"));
         processRequest.setCaseListedDate(converter.convertDate("2024-04-01"));
-        processRequest.setCnrNo("KLER550001232023");
-        processRequest.setCourtBenchCd("1");
+        //processRequest.setCourtBenchCd("1");
         processRequest.setProcessInvAgency("Police");
-        processRequest.setCourtBenchName("Principal Sub Judge");
+        //processRequest.setCourtBenchName("Principal Sub Judge");
         processRequest.setProcessReceiverType("W");
-        PartyData partyData = new PartyData();
-        partyData.setSpartyAge("15");
-        //processRequest.setSpartyData(partyData);
     }
 }
