@@ -1,6 +1,6 @@
 package com.egov.icops_integrationkerala.util;
 
-import com.egov.icops_integrationkerala.model.AuthToken;
+import com.egov.icops_integrationkerala.model.AuthResponse;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class JwtUtil {
         this.jwtParser = Jwts.parser().setSigningKey(secretKey);
     }
 
-    public AuthToken generateToken(String serviceName) {
+    public AuthResponse generateToken(String serviceName) {
         Date tokenCreateTime = new Date();
         Date tokenExpiryTime = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(tokenExpirationTime));
         String accessToken =  Jwts.builder()
@@ -35,7 +35,7 @@ public class JwtUtil {
                 .setExpiration(tokenExpiryTime)
                 .signWith(secretKey)
                 .compact();
-        return AuthToken.builder()
+        return AuthResponse.builder()
                 .accessToken(accessToken).expiresIn((int) tokenExpirationTime)
                 .tokenType("Bearer").scope("").build();
     }

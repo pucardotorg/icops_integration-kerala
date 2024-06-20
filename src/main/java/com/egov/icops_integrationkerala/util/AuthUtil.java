@@ -1,7 +1,7 @@
 package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
-import com.egov.icops_integrationkerala.model.AuthToken;
+import com.egov.icops_integrationkerala.model.AuthResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
@@ -29,7 +28,7 @@ public class AuthUtil {
         this.config = config;
     }
 
-    public AuthToken authenticateAndGetToken() throws Exception {
+    public AuthResponse authenticateAndGetToken() throws Exception {
         log.info("Getting Auth Token from Icop");
         // Define the URL for authentication
         String authUrl = config.getIcopsUrl() + config.getAuthEndpoint();
@@ -48,7 +47,7 @@ public class AuthUtil {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
         try {
-            ResponseEntity<AuthToken> responseEntity = restTemplate.postForEntity(authUrl, requestEntity, AuthToken.class);
+            ResponseEntity<AuthResponse> responseEntity = restTemplate.postForEntity(authUrl, requestEntity, AuthResponse.class);
             return responseEntity.getBody();
         } catch (RestClientException e) {
             log.error("Error occurred at authentication ", e);

@@ -37,13 +37,13 @@ public class IcopsController {
     }
 
     @RequestMapping(value = "/v1/integrations/iCops/_getAuthToken", method = RequestMethod.POST)
-    public ResponseEntity<AuthToken> getAuthToken(@RequestParam("service_name") String serviceName,
-                                               @RequestParam("service_ky") String serviceKy,
-                                               @RequestParam("auth_type") String authType) throws Exception {
+    public ResponseEntity<AuthResponse> getAuthToken(@RequestParam("service_name") String serviceName,
+                                                     @RequestParam("service_ky") String serviceKy,
+                                                     @RequestParam("auth_type") String authType) throws Exception {
         log.info("api = /getAuthToken , Status = IN-PROGRESS");
-        AuthToken authToken = icopsService.generateAuthToken(serviceName, serviceKy, authType);
+        AuthResponse authResponse = icopsService.generateAuthToken(serviceName, serviceKy, authType);
         log.info("api = /getAuthToken , Status = SUCCESS");
-        return new ResponseEntity<>(authToken, HttpStatus.OK);
+        return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/v1/integrations/iCops/_getProcessReport", method = RequestMethod.POST)
@@ -52,16 +52,5 @@ public class IcopsController {
         ChannelMessage response = icopsService.processPoliceReport(processReport);
         log.info("api = /getProcessReport , Status = SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/v2/integrations/iCops/_sendRequest", method = RequestMethod.POST)
-    public ResponseEntity<IcopsProcessResponse> sendPRRequest(@RequestBody IcopsProcessRequest icopsProcessRequest) throws Exception {
-        log.info("api = /v2/_sendRequest , Status = IN-PROGRESS");
-        ChannelMessage response = icopsService.sendRequestToIcopsV2(icopsProcessRequest.getProcessRequest());
-        ResponseInfo responseInfo = ResponseInfo.builder().build();
-        IcopsProcessResponse icopsResponse = IcopsProcessResponse.builder()
-                .responseInfo(responseInfo).channelMessage(response).build();
-        log.info("api = /v2/_sendRequest , Status = SUCCESS");
-        return new ResponseEntity<>(icopsResponse, HttpStatus.CREATED);
     }
 }

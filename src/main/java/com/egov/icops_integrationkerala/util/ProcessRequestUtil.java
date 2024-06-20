@@ -1,7 +1,7 @@
 package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
-import com.egov.icops_integrationkerala.model.AuthToken;
+import com.egov.icops_integrationkerala.model.AuthResponse;
 import com.egov.icops_integrationkerala.model.ChannelMessage;
 import com.egov.icops_integrationkerala.model.ProcessRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,7 +31,7 @@ public class ProcessRequestUtil {
         this.objectMapper = objectMapper;
     }
 
-    public ChannelMessage callProcessRequest(AuthToken authResponse, ProcessRequest processRequest) throws Exception {
+    public ChannelMessage callProcessRequest(AuthResponse authResponse, ProcessRequest processRequest) throws Exception {
         String icopsUrl = config.getIcopsUrl() + config.getProcessRequestEndPoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
