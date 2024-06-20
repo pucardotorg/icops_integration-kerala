@@ -7,6 +7,7 @@ import com.egov.icops_integrationkerala.model.ProcessRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -41,18 +42,16 @@ public class ProcessRequestUtil {
         try {
             log.info("Request Headers: {}", headers);
             log.info("Request Body: {}", objectMapper.writeValueAsString(processRequest));
-
             // Send the request and get the response
-            ResponseEntity<ChannelMessage> responseEntity = restTemplate.postForEntity(icopsUrl, requestEntity, ChannelMessage.class);
+            ResponseEntity<Object> responseEntity =
+                    restTemplate.postForEntity(icopsUrl, requestEntity, Object.class);
+            // Print the response body and status code
             log.info("Status Code: {}", responseEntity.getStatusCode());
             log.info("Response Body: {}", responseEntity.getBody());
-            return responseEntity.getBody();
+            return objectMapper.convertValue(responseEntity.getBody(), ChannelMessage.class);
         } catch (RestClientException e) {
             log.error("Error occurred when sending Process Request ", e);
-            throw new Exception("Error occurred when sending Process Request", e);
-        } catch (JsonProcessingException e) {
-            log.error("Error occurred when processing JSON", e);
-            throw new Exception("Error occurred when processing JSON", e);
+            throw new CustomException("ICOPS_PROCESS_REQUEST_ERROR","Error occurred when sending Process Request");
         }
     }
 }
