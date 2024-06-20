@@ -66,7 +66,25 @@ public class IcopsService {
     public ChannelMessage sendRequestToIcops(SendSummonsRequest summonsRequest) throws Exception {
         ProcessRequest processRequest = getProcessRequest(summonsRequest.getTaskSummon());
         AuthToken authResponse = authUtil.authenticateAndGetToken();
-        return processRequestUtil.callProcessRequest(authResponse, processRequest);
+        String icopsUrl = config.getIcopsUrl() + config.getProcessRequestEndPoint();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + authResponse.getAccessToken());
+        HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(processRequest, headers);
+        try {
+            log.error("Request Body: {}", objectMapper.writeValueAsString(processRequest));
+            // Send the request and get the response
+            ResponseEntity<Object> responseEntity =
+                    restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, Object.class);
+            ChannelMessage response = objectMapper.convertValue(responseEntity.getBody(), ChannelMessage.class);
+            // Print the response body and status code
+            log.info("Status Code: {}", responseEntity.getStatusCode());
+            log.info("Response Body: {}", responseEntity.getBody());
+            return response;
+        } catch (RestClientException e) {
+            log.error("Error occurred when sending Process Request ", e);
+            throw new Exception("Error occurred when sending Process Request");
+        }
     }
 
     private ProcessRequest getProcessRequest(TaskSummon taskSummon) {
