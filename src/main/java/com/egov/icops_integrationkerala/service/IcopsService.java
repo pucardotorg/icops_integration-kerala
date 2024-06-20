@@ -70,9 +70,9 @@ public class IcopsService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + authResponse.getAccessToken());
-        HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(processRequest, headers);
+        log.error("Request Body: {}", objectMapper.writeValueAsString(processRequest));
+        HttpEntity<String> requestEntity = new HttpEntity<>(objectMapper.writeValueAsString(processRequest), headers);
         try {
-            log.error("Request Body: {}", objectMapper.writeValueAsString(processRequest));
             // Send the request and get the response
             ResponseEntity<Object> responseEntity =
                     restTemplate.restTemplate().postForEntity(icopsUrl, requestEntity, Object.class);
