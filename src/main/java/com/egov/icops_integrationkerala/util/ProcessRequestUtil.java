@@ -39,20 +39,16 @@ public class ProcessRequestUtil {
         HttpEntity<ProcessRequest> requestEntity = new HttpEntity<>(processRequest, headers);
 
         try {
-            log.info("Request URL: {}", icopsUrl);
             log.info("Request Headers: {}", headers);
             log.info("Request Body: {}", objectMapper.writeValueAsString(processRequest));
 
             // Send the request and get the response
             ResponseEntity<ChannelMessage> responseEntity = restTemplate.postForEntity(icopsUrl, requestEntity, ChannelMessage.class);
-
+            log.info("Status Code: {}", responseEntity.getStatusCode());
+            log.info("Response Body: {}", responseEntity.getBody());
             return responseEntity.getBody();
         } catch (RestClientException e) {
             log.error("Error occurred when sending Process Request ", e);
-            log.error("Error Message: {}", e.getMessage());
-            log.error("Request URL: {}", icopsUrl);
-            log.error("Request Headers: {}", headers);
-            log.error("Request Body: {}", objectMapper.writeValueAsString(processRequest));
             throw new Exception("Error occurred when sending Process Request", e);
         } catch (JsonProcessingException e) {
             log.error("Error occurred when processing JSON", e);
