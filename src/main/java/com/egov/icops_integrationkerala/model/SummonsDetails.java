@@ -20,7 +20,7 @@ public class SummonsDetails {
     private String summonId = null;
 
     @JsonProperty("issueDate")
-    private LocalDate issueDate;
+    private String issueDate;
 
     @JsonProperty("docType")
     private String docType;
