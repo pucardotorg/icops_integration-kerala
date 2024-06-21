@@ -36,7 +36,13 @@ public class IcopsConfiguration {
     private String fileStoreHost;
 
     @Value("${egov.file.store.search.endpoint}")
-    private String fileStoreEndPoint;
+    private String fileStoreSearchEndPoint;
+
+    @Value("${egov.file.store.save.endpoint}")
+    private String fileStoreSaveEndPoint;
+
+    @Value("${egov.file.store.summons.module}")
+    private String summonsFileStoreModule;
 
     //MDMS
     @Value("${egov.mdms.host}")

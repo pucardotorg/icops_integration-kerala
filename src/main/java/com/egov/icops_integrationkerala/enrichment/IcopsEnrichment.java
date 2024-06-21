@@ -6,8 +6,10 @@ import com.egov.icops_integrationkerala.util.DateStringConverter;
 import com.egov.icops_integrationkerala.util.FileStorageUtil;
 import com.egov.icops_integrationkerala.util.MdmsUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.egov.tracer.model.CustomException;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -102,17 +104,78 @@ public class IcopsEnrichment {
 
     private AdditionalFields convertProcessReportData(ProcessReport processReport) {
         AdditionalFields additionalFields = new AdditionalFields();
-        try {
-            for (java.lang.reflect.Field field : processReport.getClass().getDeclaredFields()) {
-                Object value = field.get(processReport);
-                if (value != null) {
-                    additionalFields.addFieldsItem(new Field(field.getName(), value.toString()));
-                }
-            }
-        } catch (Exception e) {
-            log.error("Error occurred when converting process Report data", e);
-            throw new CustomException("PROCESS_REPORT_DATA_CONVERT_ERROR", "Error occurred when converting process Report data");
+        List<Field> fieldsList = new ArrayList<>();
+        if (processReport.getProcessUniqueId() != null) {
+            fieldsList.add(new Field("processUniqueId", processReport.getProcessUniqueId()));
         }
+        if (processReport.getProcessCourtCode() != null) {
+            fieldsList.add(new Field("processCourtCode", processReport.getProcessCourtCode()));
+        }
+        if (processReport.getProcessActionDate() != null) {
+            fieldsList.add(new Field("processActionDate", processReport.getProcessActionDate()));
+        }
+        if (processReport.getProcessActionStatusCd() != null) {
+            fieldsList.add(new Field("processActionStatusCd", processReport.getProcessActionStatusCd()));
+        }
+        if (processReport.getProcessActionStatus() != null) {
+            fieldsList.add(new Field("processActionStatus", processReport.getProcessActionStatus()));
+        }
+        if (processReport.getProcessActionSubStatusCd() != null) {
+            fieldsList.add(new Field("processActionSubStatusCd", processReport.getProcessActionSubStatusCd()));
+        }
+        if (processReport.getProcessActionSubStatus() != null) {
+            fieldsList.add(new Field("processActionSubStatus", processReport.getProcessActionSubStatus()));
+        }
+        if (processReport.getProcessFailureReason() != null) {
+            fieldsList.add(new Field("processFailureReason", processReport.getProcessFailureReason()));
+        }
+        if (processReport.getProcessMethodOfExecution() != null) {
+            fieldsList.add(new Field("processMethodOfExecution", processReport.getProcessMethodOfExecution()));
+        }
+        if (processReport.getProcessExecutedTo() != null) {
+            fieldsList.add(new Field("processExecutedTo", processReport.getProcessExecutedTo()));
+        }
+        if (processReport.getProcessExecutedToRelation() != null) {
+            fieldsList.add(new Field("processExecutedToRelation", processReport.getProcessExecutedToRelation()));
+        }
+        if (processReport.getProcessExecutionPlace() != null) {
+            fieldsList.add(new Field("processExecutionPlace", processReport.getProcessExecutionPlace()));
+        }
+        if (processReport.getProcessActionRemarks() != null) {
+            fieldsList.add(new Field("processActionRemarks", processReport.getProcessActionRemarks()));
+        }
+        if (processReport.getProcessExecutingOfficerName() != null) {
+            fieldsList.add(new Field("processExecutingOfficerName", processReport.getProcessExecutingOfficerName()));
+        }
+        if (processReport.getProcessExecutingOfficerRank() != null) {
+            fieldsList.add(new Field("processExecutingOfficerRank", processReport.getProcessExecutingOfficerRank()));
+        }
+        if (processReport.getProcessExecutingOfficeCode() != null) {
+            fieldsList.add(new Field("processExecutingOfficeCode", processReport.getProcessExecutingOfficeCode()));
+        }
+        if (processReport.getProcessExecutingOffice() != null) {
+            fieldsList.add(new Field("processExecutingOffice", processReport.getProcessExecutingOffice()));
+        }
+        if (processReport.getProcessSubmittingOfficerName() != null) {
+            fieldsList.add(new Field("processSubmittingOfficerName", processReport.getProcessSubmittingOfficerName()));
+        }
+        if (processReport.getProcessSubmittingOfficerRank() != null) {
+            fieldsList.add(new Field("processSubmittingOfficerRank", processReport.getProcessSubmittingOfficerRank()));
+        }
+        if (processReport.getProcessSubmittingOfficeCode() != null) {
+            fieldsList.add(new Field("processSubmittingOfficeCode", processReport.getProcessSubmittingOfficeCode()));
+        }
+        if (processReport.getProcessSubmittingOffice() != null) {
+            fieldsList.add(new Field("processSubmittingOffice", processReport.getProcessSubmittingOffice()));
+        }
+        if (processReport.getProcessReportSubmittingDateTime() != null) {
+            fieldsList.add(new Field("processReportSubmittingDateTime", processReport.getProcessReportSubmittingDateTime()));
+        }
+        if (processReport.getProcessReport() != null) {
+            String fileStoreId = fileStorageUtil.saveDocumentToFileStore(processReport.getProcessReport());
+            fieldsList.add(new Field("policeReportFileStoreId", fileStoreId));
+        }
+        additionalFields.setFields(fieldsList);
         return additionalFields;
     }
 }
