@@ -71,7 +71,7 @@ public class FileStorageUtil {
 
         ResponseEntity<Object> responseEntity = restTemplate.postForEntity(uri.toString(),
                 requestEntity, Object.class);
-
+        log.info("Response Body: {}", responseEntity.getBody());
         JsonNode rootNode = mapper.convertValue(responseEntity.getBody(), JsonNode.class);
         if (rootNode.has("files") && rootNode.get("files").isArray()
                 && rootNode.get("files").get(0).isObject()) {

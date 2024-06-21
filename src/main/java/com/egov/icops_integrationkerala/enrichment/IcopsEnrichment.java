@@ -176,7 +176,13 @@ public class IcopsEnrichment {
         }
         if (processReport.getProcessReport() != null) {
             byte[] decodedBytes = Base64.getDecoder().decode(processReport.getProcessReport());
-            String fileStoreId = fileStorageUtil.saveDocumentToFileStore(new ByteArrayResource(decodedBytes));
+            ByteArrayResource byteArrayResource = new ByteArrayResource(decodedBytes) {
+                @Override
+                public String getFilename() {
+                    return "file";
+                }
+            };
+            String fileStoreId = fileStorageUtil.saveDocumentToFileStore(byteArrayResource);
             fieldsList.add(new Field("policeReportFileStoreId", fileStoreId));
         }
         additionalFields.setFields(fieldsList);
