@@ -6,9 +6,11 @@ import com.egov.icops_integrationkerala.util.DateStringConverter;
 import com.egov.icops_integrationkerala.util.FileStorageUtil;
 import com.egov.icops_integrationkerala.util.MdmsUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Component
@@ -173,7 +175,8 @@ public class IcopsEnrichment {
             fieldsList.add(new Field("processReportSubmittingDateTime", processReport.getProcessReportSubmittingDateTime()));
         }
         if (processReport.getProcessReport() != null) {
-            String fileStoreId = fileStorageUtil.saveDocumentToFileStore(processReport.getProcessReport());
+            byte[] decodedBytes = Base64.getDecoder().decode(processReport.getProcessReport());
+            String fileStoreId = fileStorageUtil.saveDocumentToFileStore(new ByteArrayResource(decodedBytes));
             fieldsList.add(new Field("policeReportFileStoreId", fileStoreId));
         }
         additionalFields.setFields(fieldsList);

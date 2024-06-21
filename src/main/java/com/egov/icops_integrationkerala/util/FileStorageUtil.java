@@ -55,7 +55,7 @@ public class FileStorageUtil {
         }
     }
 
-    public String saveDocumentToFileStore(String base64String) {
+    public String saveDocumentToFileStore(ByteArrayResource byteArrayResource) {
         StringBuilder uri = new StringBuilder();
         uri.append(config.getFileStoreHost())
                 .append(config.getFileStoreSaveEndPoint())
@@ -63,23 +63,15 @@ public class FileStorageUtil {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        byte[] decodedBytes = Base64.decodeBase64(base64String);
-
-        ByteArrayResource fileAsResource = new ByteArrayResource(decodedBytes) {
-            @Override
-            public String getFilename() {
-                return "file"; // The filename must be provided here
-            }
-        };
 
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
-        parts.add("file", fileAsResource);
+        parts.add("file", byteArrayResource);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(parts, headers);
 
         ResponseEntity<Object> responseEntity = restTemplate.postForEntity(uri.toString(),
                 requestEntity, Object.class);
-        log.info("Response Body: {}", responseEntity.getBody());
+
         JsonNode rootNode = mapper.convertValue(responseEntity.getBody(), JsonNode.class);
         if (rootNode.has("files") && rootNode.get("files").isArray()
                 && rootNode.get("files").get(0).isObject()) {
