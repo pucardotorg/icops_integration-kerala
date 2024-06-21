@@ -65,8 +65,15 @@ public class FileStorageUtil {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         byte[] decodedBytes = Base64.decodeBase64(base64String);
 
+        ByteArrayResource fileAsResource = new ByteArrayResource(decodedBytes) {
+            @Override
+            public String getFilename() {
+                return "file"; // The filename must be provided here
+            }
+        };
+
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
-        parts.add("file", new ByteArrayResource(decodedBytes));
+        parts.add("file", fileAsResource);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(parts, headers);
 
