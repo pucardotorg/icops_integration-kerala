@@ -104,6 +104,7 @@ public class IcopsEnrichment {
 
     private AdditionalFields convertProcessReportData(ProcessReport processReport) {
         AdditionalFields additionalFields = new AdditionalFields();
+        log.info("ProcessReport : {}", processReport);
         List<Field> fieldsList = new ArrayList<>();
         if (processReport.getProcessUniqueId() != null) {
             fieldsList.add(new Field("processUniqueId", processReport.getProcessUniqueId()));
