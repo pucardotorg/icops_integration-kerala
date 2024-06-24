@@ -1,10 +1,7 @@
 package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
-import com.egov.icops_integrationkerala.model.ChannelMessage;
-import com.egov.icops_integrationkerala.model.ChannelReport;
-import com.egov.icops_integrationkerala.model.ProcessRequest;
-import com.egov.icops_integrationkerala.model.UpdateSummonsRequest;
+import com.egov.icops_integrationkerala.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.RequestInfo;
@@ -46,7 +43,7 @@ public class SummonsUtil {
             // Print the response body and status code
             log.info("Status Code: {}", responseEntity.getStatusCode());
             log.info("Response Body: {}", responseEntity.getBody());
-            return objectMapper.convertValue(responseEntity.getBody(), ChannelMessage.class);
+            return objectMapper.convertValue(responseEntity.getBody(), UpdateSummonsResponse.class).getChannelMessage();
         } catch (RestClientException e) {
             log.error("Error occurred when sending Process Request ", e);
             throw new CustomException("SUMMONS_UPDATE_ERROR","Error occurred when sending Update Summons Request");
