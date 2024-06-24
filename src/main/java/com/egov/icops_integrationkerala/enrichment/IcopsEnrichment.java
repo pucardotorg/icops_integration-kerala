@@ -6,9 +6,11 @@ import com.egov.icops_integrationkerala.util.DateStringConverter;
 import com.egov.icops_integrationkerala.util.FileStorageUtil;
 import com.egov.icops_integrationkerala.util.MdmsUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.egov.tracer.model.CustomException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -176,14 +178,23 @@ public class IcopsEnrichment {
         }
         if (processReport.getProcessReport() != null) {
             byte[] decodedBytes = Base64.getDecoder().decode(processReport.getProcessReport());
-            ByteArrayResource byteArrayResource = new ByteArrayResource(decodedBytes) {
-                @Override
-                public String getFilename() {
-                    return "file";
+            String filePath = "file.pdf";
+
+            // Write the byte array to a PDF file
+            try (OutputStream os = new FileOutputStream(filePath)) {
+                os.write(decodedBytes);
+                System.out.println("PDF file successfully created at: " + filePath);
+                String fileStoreId = fileStorageUtil.saveDocumentToFileStore(filePath);
+                fieldsList.add(new Field("policeReportFileStoreId", fileStoreId));
+            } catch (IOException e) {
+                log.error("Error occurred when generating file from base64 string", e);
+                throw new CustomException("SUMMONS_FILE_SAVE_ERROR", "Failed to generate file from base64 string");
+            } finally {
+                File file = new File(filePath);
+                if (file.exists() && file.isFile()) {
+                    file.delete();
                 }
-            };
-            String fileStoreId = fileStorageUtil.saveDocumentToFileStore(byteArrayResource);
-            fieldsList.add(new Field("policeReportFileStoreId", fileStoreId));
+            }
         }
         additionalFields.setFields(fieldsList);
         return additionalFields;

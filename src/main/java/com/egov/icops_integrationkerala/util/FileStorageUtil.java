@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.egov.tracer.model.CustomException;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -15,6 +16,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.File;
 
 @Component
 @Slf4j
@@ -55,7 +58,7 @@ public class FileStorageUtil {
         }
     }
 
-    public String saveDocumentToFileStore(ByteArrayResource byteArrayResource) {
+    public String saveDocumentToFileStore(String filePath) {
         StringBuilder uri = new StringBuilder();
         uri.append(config.getFileStoreHost())
                 .append(config.getFileStoreSaveEndPoint())
@@ -63,9 +66,10 @@ public class FileStorageUtil {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        FileSystemResource fileResource = new FileSystemResource(new File(filePath));
 
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
-        parts.add("file", byteArrayResource);
+        parts.add("file", fileResource);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(parts, headers);
 
@@ -77,6 +81,7 @@ public class FileStorageUtil {
                 && rootNode.get("files").get(0).isObject()) {
             return rootNode.get("files").get(0).get("fileStoreId").asText();
         } else {
+            log.error("Failed to get valid response from file store service");
             throw new CustomException("SUMMONS_FILE_STORE_ERROR", "Failed to get valid file store id from file store service");
         }
     }
