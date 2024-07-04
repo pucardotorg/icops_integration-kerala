@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Slf4j
 public class IcopsController {
 
-    private IcopsService icopsService;
+    private final IcopsService icopsService;
 
     @Autowired
     public IcopsController(IcopsService icopsService) {
@@ -26,14 +26,14 @@ public class IcopsController {
     }
 
     @RequestMapping(value = "/v1/integrations/iCops/_sendRequest", method = RequestMethod.POST)
-    public ResponseEntity<IcopsProcessResponse> sendPRRequest(@RequestBody SendSummonsRequest summonsRequest) throws Exception {
+    public ResponseEntity<ProcessResponse> sendPRRequest(@RequestBody TaskRequest taskRequest) throws Exception {
         log.info("api = /v1/_sendRequest , Status = IN-PROGRESS");
-        ChannelMessage response = icopsService.sendRequestToIcops(summonsRequest);
+        ChannelMessage response = icopsService.sendRequestToIcops(taskRequest);
         ResponseInfo responseInfo = ResponseInfo.builder().build();
-        IcopsProcessResponse icopsResponse = IcopsProcessResponse.builder()
+        ProcessResponse iCopsResponse = ProcessResponse.builder()
                 .responseInfo(responseInfo).channelMessage(response).build();
         log.info("api = /v1/_sendRequest , Status = SUCCESS");
-        return new ResponseEntity<>(icopsResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(iCopsResponse, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/v1/integrations/iCops/_getAuthToken", method = RequestMethod.POST)
@@ -47,9 +47,9 @@ public class IcopsController {
     }
 
     @RequestMapping(value = "/v1/integrations/iCops/_getProcessReport", method = RequestMethod.POST)
-    public ResponseEntity<ChannelMessage> getProcessReport(@RequestBody IcopsProcessReport icopsProcessReport) {
+    public ResponseEntity<ChannelMessage> getProcessReport(@RequestBody ProcessReport processReport) {
         log.info("api = /getProcessReport , Status = IN-PROGRESS");
-        ChannelMessage response = icopsService.processPoliceReport(icopsProcessReport);
+        ChannelMessage response = icopsService.processPoliceReport(processReport);
         log.info("api = /getProcessReport , Status = SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

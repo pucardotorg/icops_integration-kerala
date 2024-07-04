@@ -7,7 +7,7 @@ import org.egov.common.contract.response.ResponseInfo;
 
 @Data
 @Builder
-public class IcopsProcessResponse {
+public class ProcessResponse {
 
     @JsonProperty("ResponseInfo")
     private ResponseInfo responseInfo;

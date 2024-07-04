@@ -1,14 +1,8 @@
 package com.egov.icops_integrationkerala.service;
 
-import com.egov.icops_integrationkerala.config.IcopsConfiguration;
-import com.egov.icops_integrationkerala.config.MyRestTemplateConfig;
 import com.egov.icops_integrationkerala.enrichment.IcopsEnrichment;
 import com.egov.icops_integrationkerala.model.*;
-import com.egov.icops_integrationkerala.util.AuthUtil;
-import com.egov.icops_integrationkerala.util.JwtUtil;
-import com.egov.icops_integrationkerala.util.ProcessRequestUtil;
-import com.egov.icops_integrationkerala.util.SummonsUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.egov.icops_integrationkerala.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,24 +11,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 @Slf4j
 public class IcopsService {
 
 
-    private final MyRestTemplateConfig restTemplate;
-
-    private final ObjectMapper objectMapper;
-
-    private final IcopsConfiguration config;
-
-    private AuthUtil authUtil;
+    private final AuthUtil authUtil;
 
     private final AuthenticationManager authenticationManager;
 
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     private final IcopsEnrichment icopsEnrichment;
 
@@ -42,24 +28,24 @@ public class IcopsService {
 
     private final SummonsUtil summonsUtil;
 
+    private final RequestInfoGenerator requestInfoGenerator;
+
     @Autowired
-    public IcopsService(MyRestTemplateConfig restTemplate, ObjectMapper objectMapper,
-                        IcopsConfiguration config, AuthUtil authUtil, AuthenticationManager authenticationManager,
-                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil) {
-        this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
-        this.config = config;
+    public IcopsService(AuthUtil authUtil, AuthenticationManager authenticationManager,
+                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator) {
+
         this.authUtil = authUtil;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.icopsEnrichment = icopsEnrichment;
         this.processRequestUtil = processRequestUtil;
         this.summonsUtil = summonsUtil;
+        this.requestInfoGenerator = requestInfoGenerator;
     }
 
 
-    public ChannelMessage sendRequestToIcops(SendSummonsRequest summonsRequest) throws Exception {
-        ProcessRequest processRequest = icopsEnrichment.getProcessRequest(summonsRequest.getTaskSummon());
+    public ChannelMessage sendRequestToIcops(TaskRequest taskRequest) throws Exception {
+        ProcessRequest processRequest = icopsEnrichment.getProcessRequest(taskRequest.getTask());
         AuthResponse authResponse = authUtil.authenticateAndGetToken();
         return processRequestUtil.callProcessRequest(authResponse, processRequest);
     }
@@ -73,10 +59,10 @@ public class IcopsService {
         }
     }
 
-    public ChannelMessage processPoliceReport(IcopsProcessReport icopsProcessReport) {
-        ChannelReport channelReport = icopsEnrichment.getChannelReport(icopsProcessReport.getProcessReport());
+    public ChannelMessage processPoliceReport(ProcessReport processReport) {
+        ChannelReport channelReport = icopsEnrichment.getChannelReport(processReport);
         UpdateSummonsRequest request = UpdateSummonsRequest.builder()
-                .requestInfo(icopsProcessReport.getRequestInfo()).channelReport(channelReport).build();
+                .requestInfo(requestInfoGenerator.generateSystemRequestInfo()).channelReport(channelReport).build();
         return summonsUtil.updateSummonsDeliveryStatus(request);
     }
 }

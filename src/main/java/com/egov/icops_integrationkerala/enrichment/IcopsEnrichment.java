@@ -7,7 +7,6 @@ import com.egov.icops_integrationkerala.util.FileStorageUtil;
 import com.egov.icops_integrationkerala.util.MdmsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.tracer.model.CustomException;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -19,8 +18,6 @@ import java.util.List;
 @Slf4j
 public class IcopsEnrichment {
 
-    private final MdmsUtil mdmsUtil;
-
     private final FileStorageUtil fileStorageUtil;
 
     private final IcopsConfiguration config;
@@ -28,37 +25,40 @@ public class IcopsEnrichment {
     private final DateStringConverter converter;
 
 
-    public IcopsEnrichment(MdmsUtil mdmsUtil, FileStorageUtil fileStorageUtil, IcopsConfiguration config,
+    public IcopsEnrichment(FileStorageUtil fileStorageUtil, IcopsConfiguration config,
                            DateStringConverter converter) {
-        this.mdmsUtil = mdmsUtil;
         this.fileStorageUtil = fileStorageUtil;
         this.config = config;
         this.converter = converter;
     }
 
-    public ProcessRequest getProcessRequest(TaskSummon taskSummon) {
-        String docFileString = fileStorageUtil.getFileFromFileStoreService(taskSummon.getSummonsDocument().getFileStoreId(),
-                config.getEgovStateTenantId());
+    public ProcessRequest getProcessRequest(Task task) {
+        TaskDetails taskDetails = task.getTaskDetails();
+        String fileStoreId = task.getDocuments().get(0).getFileStore();
+        String docFileString = fileStorageUtil.getFileFromFileStoreService(fileStoreId, config.getEgovStateTenantId());
         ProcessRequest processRequest = ProcessRequest.builder()
-                .processCaseno(taskSummon.getCaseDetails().getCaseId())
+                .processCaseno(taskDetails.getCaseDetails().getCaseId())
                 .processDoc(docFileString)
-                .processUniqueId(taskSummon.getSummonDetails().getSummonId())
-                .processCourtName(taskSummon.getCaseDetails().getCourtName())
-                .processJudge(taskSummon.getCaseDetails().getJudgeName())
-                .processIssueDate(converter.convertDate(taskSummon.getSummonDetails().getIssueDate()))
-                .processNextHearingDate(converter.convertDate(taskSummon.getCaseDetails().getHearingDate()))
-                .processRespondentName(taskSummon.getRespondentDetails().getName())
-                .processRespondentGender(taskSummon.getRespondentDetails().getGender())
-                .processRespondentAge(String.valueOf(taskSummon.getRespondentDetails().getAge()))
-                .processRespondentRelativeName(taskSummon.getRespondentDetails().getRelativeName())
-                .processRespondentRelation(taskSummon.getRespondentDetails().getRelationWithRelative())
-                .processReceiverAddress(taskSummon.getRespondentDetails().getAddress())
-                .processReceiverState(taskSummon.getRespondentDetails().getState())
-                .processReceiverDistrict(taskSummon.getRespondentDetails().getDistrict())
-                .processReceiverPincode(taskSummon.getRespondentDetails().getPinCode())
-                .processPartyType(taskSummon.getSummonDetails().getPartyType())
-                .processDocType(taskSummon.getSummonDetails().getDocType())
-                .processDocSubType(taskSummon.getSummonDetails().getDocSubType())
+                .processUniqueId(taskDetails.getSummonDetails().getSummonId())
+                .processCourtName(taskDetails.getCaseDetails().getCourtName())
+                .processJudge(taskDetails.getCaseDetails().getJudgeName())
+                .processIssueDate(converter.convertDate(taskDetails.getSummonDetails().getIssueDate()))
+                .processNextHearingDate(converter.convertDate(taskDetails.getCaseDetails().getHearingDate()))
+                .processRespondentName(taskDetails.getRespondentDetails().getName())
+                .processRespondentGender(taskDetails.getRespondentDetails().getGender())
+                .processRespondentAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
+                .processRespondentRelativeName(taskDetails.getRespondentDetails().getRelativeName())
+                .processRespondentRelation(taskDetails.getRespondentDetails().getRelationWithRelative())
+                .processReceiverAddress(taskDetails.getRespondentDetails().getAddress())
+                .processReceiverState(taskDetails.getRespondentDetails().getState())
+                .processReceiverDistrict(taskDetails.getRespondentDetails().getDistrict())
+                .processReceiverPincode(taskDetails.getRespondentDetails().getPinCode())
+                .processPartyType(taskDetails.getSummonDetails().getPartyType())
+                .processDocType(taskDetails.getSummonDetails().getDocType())
+                .processDocSubType(taskDetails.getSummonDetails().getDocSubType())
+                .processCino(task.getCnrNumber())
+                .cnrNo(task.getCnrNumber())
+                .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
                 .build();
         enrichPoliceStationDetails(processRequest);
         return processRequest;
@@ -71,8 +71,6 @@ public class IcopsEnrichment {
         processRequest.setProcessDocSubTypeCode("2000020");
         processRequest.setProcessPoliceStationCode("15290042");
         processRequest.setProcessPoliceStationName("PUDUKKADU");
-        processRequest.setProcessCino("KLER550001232023");
-        processRequest.setCnrNo("KLER550001232023");
         processRequest.setProcessOrigin("DRISTI");
         processRequest.setProcessCourtCode("KLTR13");
         processRequest.setProcessFirYear("2019");
@@ -81,7 +79,6 @@ public class IcopsEnrichment {
         processRequest.setProcessPartyNumber("10");
         processRequest.setProcessReceiverTaluka("Mukundapuram");
         processRequest.setProcessRespondantType("W");
-        processRequest.setOrderSignedDate(converter.convertDate("2024-04-29"));
         processRequest.setCaseListedDate(converter.convertDate("2024-04-01"));
         //processRequest.setCourtBenchCd("1");
         //processRequest.setProcessInvAgency("Police");
