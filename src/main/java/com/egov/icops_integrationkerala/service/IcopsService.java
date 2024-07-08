@@ -59,8 +59,8 @@ public class IcopsService {
         }
     }
 
-    public ChannelMessage processPoliceReport(ProcessReport processReport) {
-        ChannelReport channelReport = icopsEnrichment.getChannelReport(processReport);
+    public ChannelMessage processPoliceReport(IcopsProcessReport icopsProcessReport) {
+        ChannelReport channelReport = icopsEnrichment.getChannelReport(icopsProcessReport);
         UpdateSummonsRequest request = UpdateSummonsRequest.builder()
                 .requestInfo(requestInfoGenerator.generateSystemRequestInfo()).channelReport(channelReport).build();
         return summonsUtil.updateSummonsDeliveryStatus(request);

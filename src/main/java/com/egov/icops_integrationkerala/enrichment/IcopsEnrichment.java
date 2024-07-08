@@ -4,7 +4,6 @@ import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.DateStringConverter;
 import com.egov.icops_integrationkerala.util.FileStorageUtil;
-import com.egov.icops_integrationkerala.util.MdmsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.tracer.model.CustomException;
 import org.springframework.stereotype.Component;
@@ -86,95 +85,95 @@ public class IcopsEnrichment {
         processRequest.setProcessReceiverType("W");
     }
 
-    public ChannelReport getChannelReport(ProcessReport processReport) {
+    public ChannelReport getChannelReport(IcopsProcessReport icopsProcessReport) {
         ChannelReport channelReport = new ChannelReport();
-        channelReport.setSummonId(processReport.getProcessUniqueId());
-        if (processReport.getProcessActionStatus().equalsIgnoreCase("SERVED")) {
+        channelReport.setSummonId(icopsProcessReport.getProcessUniqueId());
+        if (icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("SERVED")) {
             channelReport.setDeliveryStatus("DELIVERED_SUCCESSFULLY");
-        } else if (processReport.getProcessActionStatus().equalsIgnoreCase("NOT_SERVED") ||
-                processReport.getProcessActionStatus().equalsIgnoreCase("NOT_ARRESTED") ) {
+        } else if (icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("NOT_SERVED") ||
+                icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("NOT_ARRESTED") ) {
             channelReport.setDeliveryStatus("SUMMONS_NOT_SERVED");
-        } else if (processReport.getProcessActionStatus().equalsIgnoreCase("RETURNED")) {
+        } else if (icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("RETURNED")) {
             channelReport.setDeliveryStatus("SUMMONS_FAILED");
         } else {
             channelReport.setDeliveryStatus("SUMMONS_STATUS_UNKNOWN");
         }
-        channelReport.setAdditionalFields(convertProcessReportData(processReport));
+        channelReport.setAdditionalFields(convertProcessReportData(icopsProcessReport));
         return channelReport;
     }
 
-    private AdditionalFields convertProcessReportData(ProcessReport processReport) {
+    private AdditionalFields convertProcessReportData(IcopsProcessReport icopsProcessReport) {
         AdditionalFields additionalFields = new AdditionalFields();
-        log.info("ProcessReport : {}", processReport);
+        log.info("IcopsProcessReport : {}", icopsProcessReport);
         List<Field> fieldsList = new ArrayList<>();
-        if (processReport.getProcessUniqueId() != null) {
-            fieldsList.add(new Field("processUniqueId", processReport.getProcessUniqueId()));
+        if (icopsProcessReport.getProcessUniqueId() != null) {
+            fieldsList.add(new Field("processUniqueId", icopsProcessReport.getProcessUniqueId()));
         }
-        if (processReport.getProcessCourtCode() != null) {
-            fieldsList.add(new Field("processCourtCode", processReport.getProcessCourtCode()));
+        if (icopsProcessReport.getProcessCourtCode() != null) {
+            fieldsList.add(new Field("processCourtCode", icopsProcessReport.getProcessCourtCode()));
         }
-        if (processReport.getProcessActionDate() != null) {
-            fieldsList.add(new Field("processActionDate", processReport.getProcessActionDate()));
+        if (icopsProcessReport.getProcessActionDate() != null) {
+            fieldsList.add(new Field("processActionDate", icopsProcessReport.getProcessActionDate()));
         }
-        if (processReport.getProcessActionStatusCd() != null) {
-            fieldsList.add(new Field("processActionStatusCd", processReport.getProcessActionStatusCd()));
+        if (icopsProcessReport.getProcessActionStatusCd() != null) {
+            fieldsList.add(new Field("processActionStatusCd", icopsProcessReport.getProcessActionStatusCd()));
         }
-        if (processReport.getProcessActionStatus() != null) {
-            fieldsList.add(new Field("processActionStatus", processReport.getProcessActionStatus()));
+        if (icopsProcessReport.getProcessActionStatus() != null) {
+            fieldsList.add(new Field("processActionStatus", icopsProcessReport.getProcessActionStatus()));
         }
-        if (processReport.getProcessActionSubStatusCd() != null) {
-            fieldsList.add(new Field("processActionSubStatusCd", processReport.getProcessActionSubStatusCd()));
+        if (icopsProcessReport.getProcessActionSubStatusCd() != null) {
+            fieldsList.add(new Field("processActionSubStatusCd", icopsProcessReport.getProcessActionSubStatusCd()));
         }
-        if (processReport.getProcessActionSubStatus() != null) {
-            fieldsList.add(new Field("processActionSubStatus", processReport.getProcessActionSubStatus()));
+        if (icopsProcessReport.getProcessActionSubStatus() != null) {
+            fieldsList.add(new Field("processActionSubStatus", icopsProcessReport.getProcessActionSubStatus()));
         }
-        if (processReport.getProcessFailureReason() != null) {
-            fieldsList.add(new Field("processFailureReason", processReport.getProcessFailureReason()));
+        if (icopsProcessReport.getProcessFailureReason() != null) {
+            fieldsList.add(new Field("processFailureReason", icopsProcessReport.getProcessFailureReason()));
         }
-        if (processReport.getProcessMethodOfExecution() != null) {
-            fieldsList.add(new Field("processMethodOfExecution", processReport.getProcessMethodOfExecution()));
+        if (icopsProcessReport.getProcessMethodOfExecution() != null) {
+            fieldsList.add(new Field("processMethodOfExecution", icopsProcessReport.getProcessMethodOfExecution()));
         }
-        if (processReport.getProcessExecutedTo() != null) {
-            fieldsList.add(new Field("processExecutedTo", processReport.getProcessExecutedTo()));
+        if (icopsProcessReport.getProcessExecutedTo() != null) {
+            fieldsList.add(new Field("processExecutedTo", icopsProcessReport.getProcessExecutedTo()));
         }
-        if (processReport.getProcessExecutedToRelation() != null) {
-            fieldsList.add(new Field("processExecutedToRelation", processReport.getProcessExecutedToRelation()));
+        if (icopsProcessReport.getProcessExecutedToRelation() != null) {
+            fieldsList.add(new Field("processExecutedToRelation", icopsProcessReport.getProcessExecutedToRelation()));
         }
-        if (processReport.getProcessExecutionPlace() != null) {
-            fieldsList.add(new Field("processExecutionPlace", processReport.getProcessExecutionPlace()));
+        if (icopsProcessReport.getProcessExecutionPlace() != null) {
+            fieldsList.add(new Field("processExecutionPlace", icopsProcessReport.getProcessExecutionPlace()));
         }
-        if (processReport.getProcessActionRemarks() != null) {
-            fieldsList.add(new Field("processActionRemarks", processReport.getProcessActionRemarks()));
+        if (icopsProcessReport.getProcessActionRemarks() != null) {
+            fieldsList.add(new Field("processActionRemarks", icopsProcessReport.getProcessActionRemarks()));
         }
-        if (processReport.getProcessExecutingOfficerName() != null) {
-            fieldsList.add(new Field("processExecutingOfficerName", processReport.getProcessExecutingOfficerName()));
+        if (icopsProcessReport.getProcessExecutingOfficerName() != null) {
+            fieldsList.add(new Field("processExecutingOfficerName", icopsProcessReport.getProcessExecutingOfficerName()));
         }
-        if (processReport.getProcessExecutingOfficerRank() != null) {
-            fieldsList.add(new Field("processExecutingOfficerRank", processReport.getProcessExecutingOfficerRank()));
+        if (icopsProcessReport.getProcessExecutingOfficerRank() != null) {
+            fieldsList.add(new Field("processExecutingOfficerRank", icopsProcessReport.getProcessExecutingOfficerRank()));
         }
-        if (processReport.getProcessExecutingOfficeCode() != null) {
-            fieldsList.add(new Field("processExecutingOfficeCode", processReport.getProcessExecutingOfficeCode()));
+        if (icopsProcessReport.getProcessExecutingOfficeCode() != null) {
+            fieldsList.add(new Field("processExecutingOfficeCode", icopsProcessReport.getProcessExecutingOfficeCode()));
         }
-        if (processReport.getProcessExecutingOffice() != null) {
-            fieldsList.add(new Field("processExecutingOffice", processReport.getProcessExecutingOffice()));
+        if (icopsProcessReport.getProcessExecutingOffice() != null) {
+            fieldsList.add(new Field("processExecutingOffice", icopsProcessReport.getProcessExecutingOffice()));
         }
-        if (processReport.getProcessSubmittingOfficerName() != null) {
-            fieldsList.add(new Field("processSubmittingOfficerName", processReport.getProcessSubmittingOfficerName()));
+        if (icopsProcessReport.getProcessSubmittingOfficerName() != null) {
+            fieldsList.add(new Field("processSubmittingOfficerName", icopsProcessReport.getProcessSubmittingOfficerName()));
         }
-        if (processReport.getProcessSubmittingOfficerRank() != null) {
-            fieldsList.add(new Field("processSubmittingOfficerRank", processReport.getProcessSubmittingOfficerRank()));
+        if (icopsProcessReport.getProcessSubmittingOfficerRank() != null) {
+            fieldsList.add(new Field("processSubmittingOfficerRank", icopsProcessReport.getProcessSubmittingOfficerRank()));
         }
-        if (processReport.getProcessSubmittingOfficeCode() != null) {
-            fieldsList.add(new Field("processSubmittingOfficeCode", processReport.getProcessSubmittingOfficeCode()));
+        if (icopsProcessReport.getProcessSubmittingOfficeCode() != null) {
+            fieldsList.add(new Field("processSubmittingOfficeCode", icopsProcessReport.getProcessSubmittingOfficeCode()));
         }
-        if (processReport.getProcessSubmittingOffice() != null) {
-            fieldsList.add(new Field("processSubmittingOffice", processReport.getProcessSubmittingOffice()));
+        if (icopsProcessReport.getProcessSubmittingOffice() != null) {
+            fieldsList.add(new Field("processSubmittingOffice", icopsProcessReport.getProcessSubmittingOffice()));
         }
-        if (processReport.getProcessReportSubmittingDateTime() != null) {
-            fieldsList.add(new Field("processReportSubmittingDateTime", processReport.getProcessReportSubmittingDateTime()));
+        if (icopsProcessReport.getProcessReportSubmittingDateTime() != null) {
+            fieldsList.add(new Field("processReportSubmittingDateTime", icopsProcessReport.getProcessReportSubmittingDateTime()));
         }
-        if (processReport.getProcessReport() != null) {
-            byte[] decodedBytes = Base64.getDecoder().decode(processReport.getProcessReport());
+        if (icopsProcessReport.getProcessReport() != null) {
+            byte[] decodedBytes = Base64.getDecoder().decode(icopsProcessReport.getProcessReport());
             String filePath = "file.pdf";
 
             // Write the byte array to a PDF file

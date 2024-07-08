@@ -8,7 +8,7 @@ import lombok.ToString;
 @Data
 @Builder
 @ToString
-public class ProcessReport {
+public class IcopsProcessReport {
 
     private String processUniqueId;
     private String processCourtCode;
