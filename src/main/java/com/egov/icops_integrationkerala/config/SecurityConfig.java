@@ -9,11 +9,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
 
 @EnableWebSecurity
 @Configuration
@@ -21,30 +19,42 @@ public class SecurityConfig {
 
     private final CustomAuthenticationProvider authenticationProvider;
 
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
-    public SecurityConfig(CustomAuthenticationProvider authenticationProvider, JwtUtil jwtUtil) {
+    public SecurityConfig(CustomAuthenticationProvider authenticationProvider, JwtUtil jwtUtil, CustomAccessDeniedHandler accessDeniedHandler, CustomAuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationProvider = authenticationProvider;
         this.jwtUtil = jwtUtil;
+        this.accessDeniedHandler = accessDeniedHandler;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        AuthenticationManager authenticationManager =  authenticationConfiguration.getAuthenticationManager();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
         ServiceAuthenticationFilter serviceAuthenticationFilter = new ServiceAuthenticationFilter(authenticationManager);
         serviceAuthenticationFilter.setAuthenticationManager(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)));
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeRequests()
-                .requestMatchers("/v1/integrations/iCops/_getAuthToken", "/v1/integrations/iCops/_sendRequest").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("/v1/integrations/iCops/_getAuthToken", "/v1/integrations/iCops/_sendRequest").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(serviceAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .accessDeniedHandler(accessDeniedHandler)
+                                .authenticationEntryPoint(authenticationEntryPoint)
+                );
+
         return http.build();
     }
 

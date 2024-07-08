@@ -179,7 +179,6 @@ public class IcopsEnrichment {
             // Write the byte array to a PDF file
             try (OutputStream os = new FileOutputStream(filePath)) {
                 os.write(decodedBytes);
-                System.out.println("PDF file successfully created at: " + filePath);
                 String fileStoreId = fileStorageUtil.saveDocumentToFileStore(filePath);
                 fieldsList.add(new Field("policeReportFileStoreId", fileStoreId));
             } catch (IOException e) {
