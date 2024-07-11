@@ -17,7 +17,7 @@ public class TaskRequest {
     @Valid
     private RequestInfo requestInfo = null;
 
-    @JsonProperty("TaskDetails")
+    @JsonProperty("task")
     @Valid
     private Task task;
 }
