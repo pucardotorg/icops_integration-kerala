@@ -13,4 +13,6 @@ public class LocationBasedJurisdiction {
     @JsonProperty("included_jurisdiction")
     private PoliceStationDetails includedJurisdiction;
 
+    @JsonProperty("nearest_police_station")
+    private PoliceStationDetails nearestPoliceStation;
 }
