@@ -31,6 +31,9 @@ public class IcopsConfiguration {
     @Value("${process.request.endpoint}")
     private String processRequestEndPoint;
 
+    @Value("${location.jurisdiction.endpoint}")
+    private String locationBasedJurisdiction;
+
     // File Store Service
     @Value("${egov.file.store.host}")
     private String fileStoreHost;
