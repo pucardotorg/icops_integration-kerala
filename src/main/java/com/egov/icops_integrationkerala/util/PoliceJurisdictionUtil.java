@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @Slf4j
-public class LocationBasedJurisdictionUtil {
+public class PoliceJurisdictionUtil {
 
     private final RestTemplate restTemplate;
 
@@ -28,7 +28,7 @@ public class LocationBasedJurisdictionUtil {
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public LocationBasedJurisdictionUtil(RestTemplate restTemplate, IcopsConfiguration config, ObjectMapper objectMapper) {
+    public PoliceJurisdictionUtil(RestTemplate restTemplate, IcopsConfiguration config, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.config = config;
         this.objectMapper = objectMapper;

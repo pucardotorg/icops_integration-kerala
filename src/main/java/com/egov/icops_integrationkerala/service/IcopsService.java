@@ -1,10 +1,8 @@
 package com.egov.icops_integrationkerala.service;
 
-import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.enrichment.IcopsEnrichment;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
@@ -32,13 +29,12 @@ public class IcopsService {
     private final SummonsUtil summonsUtil;
 
     private final RequestInfoGenerator requestInfoGenerator;
-    private final MdmsUtil util;
 
-    private final LocationBasedJurisdictionUtil locationBasedJurisdictionUtil;
+    private final PoliceJurisdictionUtil policeJurisdictionUtil;
 
     @Autowired
     public IcopsService(AuthUtil authUtil, AuthenticationManager authenticationManager,
-                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, MdmsUtil util, LocationBasedJurisdictionUtil locationBasedJurisdictionUtil) {
+                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil) {
 
         this.authUtil = authUtil;
         this.authenticationManager = authenticationManager;
@@ -47,8 +43,7 @@ public class IcopsService {
         this.processRequestUtil = processRequestUtil;
         this.summonsUtil = summonsUtil;
         this.requestInfoGenerator = requestInfoGenerator;
-        this.util = util;
-        this.locationBasedJurisdictionUtil = locationBasedJurisdictionUtil;
+        this.policeJurisdictionUtil = policeJurisdictionUtil;
     }
 
 
@@ -89,6 +84,6 @@ public class IcopsService {
 
     public LocationBasedJurisdiction getLocationBasedJurisdiction(Location location) throws Exception {
         AuthResponse authResponse = authUtil.authenticateAndGetToken();
-        return locationBasedJurisdictionUtil.getLocationBasedJurisdiction(authResponse,location);
+        return policeJurisdictionUtil.getLocationBasedJurisdiction(authResponse,location);
     }
 }
