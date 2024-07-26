@@ -30,9 +30,11 @@ public class IcopsService {
 
     private final RequestInfoGenerator requestInfoGenerator;
 
+    private final PoliceJurisdictionUtil policeJurisdictionUtil;
+
     @Autowired
     public IcopsService(AuthUtil authUtil, AuthenticationManager authenticationManager,
-                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator) {
+                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil) {
 
         this.authUtil = authUtil;
         this.authenticationManager = authenticationManager;
@@ -41,12 +43,26 @@ public class IcopsService {
         this.processRequestUtil = processRequestUtil;
         this.summonsUtil = summonsUtil;
         this.requestInfoGenerator = requestInfoGenerator;
+        this.policeJurisdictionUtil = policeJurisdictionUtil;
     }
 
 
     public ChannelMessage sendRequestToIcops(TaskRequest taskRequest) throws Exception {
-        ProcessRequest processRequest = icopsEnrichment.getProcessRequest(taskRequest.getTask());
+
+
+        ProcessRequest processRequest = icopsEnrichment.getProcessRequest(taskRequest);
+
+        Location location = Location.builder()
+                .latitude(taskRequest.getTask().getTaskDetails().getRespondentDetails().getLatitude())
+                .longitude(taskRequest.getTask().getTaskDetails().getRespondentDetails().getLongitude()).build();
+
+        LocationBasedJurisdiction locationBasedJurisdiction = getLocationBasedJurisdiction(location);
+
+        processRequest.setProcessPoliceStationCode(locationBasedJurisdiction.getIncludedJurisdiction().getCode());
+        processRequest.setProcessPoliceStationName(locationBasedJurisdiction.getIncludedJurisdiction().getStation());
+
         AuthResponse authResponse = authUtil.authenticateAndGetToken();
+
         return processRequestUtil.callProcessRequest(authResponse, processRequest);
     }
 
@@ -64,5 +80,10 @@ public class IcopsService {
         UpdateSummonsRequest request = UpdateSummonsRequest.builder()
                 .requestInfo(requestInfoGenerator.generateSystemRequestInfo()).channelReport(channelReport).build();
         return summonsUtil.updateSummonsDeliveryStatus(request);
+    }
+
+    public LocationBasedJurisdiction getLocationBasedJurisdiction(Location location) throws Exception {
+        AuthResponse authResponse = authUtil.authenticateAndGetToken();
+        return policeJurisdictionUtil.getLocationBasedJurisdiction(authResponse,location);
     }
 }

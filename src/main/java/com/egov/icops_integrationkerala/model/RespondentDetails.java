@@ -50,4 +50,10 @@ public class RespondentDetails {
 
     @JsonProperty("relationWithRelative")
     private String relationWithRelative;
+
+    @JsonProperty("latitude")
+    private String latitude;
+
+    @JsonProperty("longitude")
+    private String longitude;
 }
