@@ -35,10 +35,12 @@ public class IcopsEnrichment {
         TaskDetails taskDetails = task.getTaskDetails();
         String fileStoreId = task.getDocuments().get(0).getFileStore();
         String docFileString = fileStorageUtil.getFileFromFileStoreService(fileStoreId, config.getEgovStateTenantId());
+        String processUniqueId = idgenUtil.getIdList(taskRequest.getRequestInfo(), config.getEgovStateTenantId(),
+                config.getIdName(),null,1).get(0);
         ProcessRequest processRequest = ProcessRequest.builder()
                 .processCaseno(taskDetails.getCaseDetails().getCaseId())
                 .processDoc(docFileString)
-                .processUniqueId(taskDetails.getSummonDetails().getSummonId())
+                .processUniqueId(processUniqueId)
                 .processCourtName(taskDetails.getCaseDetails().getCourtName())
                 .processJudge(taskDetails.getCaseDetails().getJudgeName())
                 .processIssueDate(converter.convertDate(taskDetails.getSummonDetails().getIssueDate()))

@@ -1,9 +1,7 @@
 package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
-import com.egov.icops_integrationkerala.model.DeliveryStatus;
-import com.egov.icops_integrationkerala.model.IcopsTracker;
-import com.egov.icops_integrationkerala.model.TaskRequest;
+import com.egov.icops_integrationkerala.model.*;
 import org.egov.common.contract.models.AuditDetails;
 import org.egov.common.contract.request.RequestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,27 +15,23 @@ public class IcopsUtil {
 
     private final IcopsConfiguration config;
 
-    private final IdgenUtil idgenUtil;
-
     @Autowired
-    public IcopsUtil(IcopsConfiguration config, IdgenUtil idgenUtil) {
+    public IcopsUtil(IcopsConfiguration config) {
         this.config = config;
-        this.idgenUtil = idgenUtil;
     }
 
-    public IcopsTracker createPostTrackerBody(TaskRequest request) {
-        String processNumber = idgenUtil.getIdList(request.getRequestInfo(), config.getEgovStateTenantId(),
-                config.getIdName(),null,1).get(0);
+    public IcopsTracker createPostTrackerBody(TaskRequest request, ProcessRequest processRequest, ChannelMessage channelMessage, DeliveryStatus status) {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         return IcopsTracker.builder()
-                .processNumber(processNumber)
+                .processNumber(processRequest.getProcessUniqueId())
                 .tenantId(config.getEgovStateTenantId())
                 .taskNumber(request.getTask().getTaskNumber())
                 .taskType(request.getTask().getTaskType())
                 .fileStoreId(request.getTask().getDocuments().get(0).getFileStore())
                 .taskDetails(request.getTask().getTaskDetails())
-                .deliveryStatus(DeliveryStatus.SUMMONS_STATUS_UNKNOWN)
+                .deliveryStatus(status)
+                .remarks(channelMessage.getFailureMsg())
                 .additionalDetails(request.getTask().getAdditionalDetails())
                 .rowVersion(0)
                 .bookingDate(currentDate)

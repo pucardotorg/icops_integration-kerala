@@ -57,7 +57,6 @@ public class IcopsService {
 
     public ChannelMessage sendRequestToIcops(TaskRequest taskRequest) throws Exception {
 
-
         ProcessRequest processRequest = icopsEnrichment.getProcessRequest(taskRequest);
 
         Location location = Location.builder()
@@ -71,13 +70,18 @@ public class IcopsService {
 
         AuthResponse authResponse = authUtil.authenticateAndGetToken();
 
-
-        IcopsTracker icopsTracker = icopsUtil.createPostTrackerBody(taskRequest);
-        IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
-
-
         ChannelMessage channelMessage = processRequestUtil.callProcessRequest(authResponse, processRequest);
 
+        IcopsTracker icopsTracker = null;
+        if(channelMessage.getAcknowledgementStatus().equalsIgnoreCase("SUCCESS")) {
+            log.info("successfully send request to icops");
+             icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.SUCCESFULLY_ACCEPTED);
+        }
+        else {
+            log.error("Failure message",channelMessage.getFailureMsg());
+            icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.NOT_ACCPETED);
+        }
+        IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
         producer.push("save-icops-tracker", request);
 
         return channelMessage;
