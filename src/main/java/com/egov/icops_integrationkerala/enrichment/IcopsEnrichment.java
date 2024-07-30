@@ -106,10 +106,8 @@ public class IcopsEnrichment {
         AdditionalFields additionalFields = new AdditionalFields();
         log.info("IcopsProcessReport : {}", icopsProcessReport);
         List<Field> fieldsList = new ArrayList<>();
-        RequestInfo requestInfo = new RequestInfo();
-        String processUniqueId = idgenUtil.getIdList(requestInfo,config.getEgovStateTenantId(),config.getIdName(),null,1).get(0);
         if (icopsProcessReport.getProcessUniqueId() != null) {
-            fieldsList.add(new Field("processUniqueId", processUniqueId));
+            fieldsList.add(new Field("processUniqueId", icopsProcessReport.getProcessUniqueId()));
         }
         if (icopsProcessReport.getProcessCourtCode() != null) {
             fieldsList.add(new Field("processCourtCode", icopsProcessReport.getProcessCourtCode()));
