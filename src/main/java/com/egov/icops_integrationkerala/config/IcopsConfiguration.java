@@ -60,4 +60,23 @@ public class IcopsConfiguration {
 
     @Value("${egov.summons.update.endpoint}")
     private String summonsUpdateEndPoint;
+
+    @Value("${egov.process.origin}")
+    private String processOrigin;
+
+    @Value("${egov.process.inv.agency}")
+    private String processInvAgency;
+
+    @Value("${egov.mdms.icops.business.service.name}")
+    private String icopsBusinessServiceName;
+
+    @Value("${egov.idgen.host}")
+    private String idGenHost;
+
+    @Value("${egov.idgen.path}")
+    private String idGenPath;
+
+    @Value("${egov.idgen.name}")
+    private String idName;
+
 }

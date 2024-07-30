@@ -1,6 +1,7 @@
 package com.egov.icops_integrationkerala.service;
 
 import com.egov.icops_integrationkerala.enrichment.IcopsEnrichment;
+import com.egov.icops_integrationkerala.kafka.Producer;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.*;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +33,13 @@ public class IcopsService {
 
     private final PoliceJurisdictionUtil policeJurisdictionUtil;
 
+    private final IcopsUtil icopsUtil;
+
+    private final Producer producer;
+
     @Autowired
     public IcopsService(AuthUtil authUtil, AuthenticationManager authenticationManager,
-                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil) {
+                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil, IcopsUtil icopsUtil, Producer producer) {
 
         this.authUtil = authUtil;
         this.authenticationManager = authenticationManager;
@@ -44,6 +49,8 @@ public class IcopsService {
         this.summonsUtil = summonsUtil;
         this.requestInfoGenerator = requestInfoGenerator;
         this.policeJurisdictionUtil = policeJurisdictionUtil;
+        this.icopsUtil = icopsUtil;
+        this.producer = producer;
     }
 
 
@@ -63,7 +70,15 @@ public class IcopsService {
 
         AuthResponse authResponse = authUtil.authenticateAndGetToken();
 
-        return processRequestUtil.callProcessRequest(authResponse, processRequest);
+        IcopsTracker icopsTracker = icopsUtil.createPostTrackerBody(taskRequest);
+        IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
+
+
+        ChannelMessage channelMessage = processRequestUtil.callProcessRequest(authResponse, processRequest);
+
+        producer.push("save-icops-tracker", request);
+
+        return channelMessage;
     }
 
     public AuthResponse generateAuthToken(String serviceName, String serviceKey, String authType) throws Exception {
