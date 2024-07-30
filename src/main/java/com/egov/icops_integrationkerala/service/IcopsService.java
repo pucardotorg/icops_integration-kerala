@@ -33,6 +33,7 @@ public class IcopsService {
 
     private final PoliceJurisdictionUtil policeJurisdictionUtil;
 
+
     private final IcopsUtil icopsUtil;
 
     private final Producer producer;
@@ -69,6 +70,7 @@ public class IcopsService {
         processRequest.setProcessPoliceStationName(locationBasedJurisdiction.getIncludedJurisdiction().getStation());
 
         AuthResponse authResponse = authUtil.authenticateAndGetToken();
+
 
         IcopsTracker icopsTracker = icopsUtil.createPostTrackerBody(taskRequest);
         IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
