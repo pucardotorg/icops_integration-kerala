@@ -12,6 +12,7 @@ CREATE TABLE dristi_kerala_icops (
     booking_date varchar(64) NULL,
     received_date varchar(64) NULL,
     row_version int4 NULL,
+    acknowledgement_id varchar(64) NULL,
     createdBy varchar(64) NULL,
     lastModifiedBy varchar(64) NULL,
     createdTime int8 NULL,

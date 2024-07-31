@@ -75,11 +75,11 @@ public class IcopsService {
         IcopsTracker icopsTracker = null;
         if(channelMessage.getAcknowledgementStatus().equalsIgnoreCase("SUCCESS")) {
             log.info("successfully send request to icops");
-             icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.SUCCESFULLY_ACCEPTED);
+             icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.SUCCESSFULLY_ACCEPTED);
         }
         else {
             log.error("Failure message",channelMessage.getFailureMsg());
-            icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.NOT_ACCPETED);
+            icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.NOT_ACCEPTED);
         }
         IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
         producer.push("save-icops-tracker", request);

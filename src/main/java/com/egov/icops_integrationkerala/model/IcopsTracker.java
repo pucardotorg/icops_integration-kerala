@@ -21,5 +21,6 @@ public class IcopsTracker {
     private Integer rowVersion;
     private String bookingDate;
     private String receivedDate;
+    private String acknowledgementId;
     private AuditDetails auditDetails;
 }

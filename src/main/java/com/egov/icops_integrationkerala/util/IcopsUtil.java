@@ -35,6 +35,7 @@ public class IcopsUtil {
                 .additionalDetails(request.getTask().getAdditionalDetails())
                 .rowVersion(0)
                 .bookingDate(currentDate)
+                .acknowledgementId(channelMessage.getAcknowledgeUniqueNumber())
                 .auditDetails(createAuditDetails(request.getRequestInfo()))
                 .build();
     }
