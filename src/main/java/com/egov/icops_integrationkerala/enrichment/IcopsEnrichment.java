@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -101,25 +103,31 @@ public class IcopsEnrichment {
         processRequest.setProcessReceiverType("W");
     }
 
+    public IcopsTracker createPostTrackerBody(TaskRequest request, ProcessRequest processRequest, ChannelMessage channelMessage, DeliveryStatus status) {
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        return IcopsTracker.builder()
+                .processNumber(processRequest.getProcessUniqueId())
+                .tenantId(config.getEgovStateTenantId())
+                .taskNumber(request.getTask().getTaskNumber())
+                .taskType(request.getTask().getTaskType())
+                .fileStoreId(request.getTask().getDocuments().get(0).getFileStore())
+                .taskDetails(request.getTask().getTaskDetails())
+                .deliveryStatus(status)
+                .remarks(channelMessage.getFailureMsg())
+                .additionalDetails(request.getTask().getAdditionalDetails())
+                .rowVersion(0)
+                .bookingDate(currentDate)
+                .acknowledgementId(channelMessage.getAcknowledgeUniqueNumber())
+                .build();
+    }
+
     public IcopsTracker enrichIcopsTrackerForUpdate(IcopsProcessReport icopsProcessReport) {
         List<IcopsTracker> icopsTrackers = repository.getIcopsTracker(icopsProcessReport.getProcessUniqueId());
         if (icopsTrackers.size() != 1) {
             throw new RuntimeException("Invalid Icops Tracker field with processNumber : " + icopsProcessReport.getProcessUniqueId());
         }
         IcopsTracker icopsTracker = icopsTrackers.get(0);
-
-        if(icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("Executed")){
-            icopsTracker.setDeliveryStatus(DeliveryStatus.SUCCESSFULLY_ACCEPTED);
-            icopsTracker.setRemarks(icopsProcessReport.getProcessActionRemarks());
-        }
-        else if(icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("Not Executed")) {
-            icopsTracker.setDeliveryStatus(DeliveryStatus.NOT_ACCEPTED);
-            icopsTracker.setRemarks(icopsProcessReport.getProcessFailureReason());
-        }
-        else{
-            icopsTracker.setDeliveryStatus(DeliveryStatus.PENDING);
-            icopsTracker.setRemarks(icopsProcessReport.getProcessFailureReason());
-        }
 
         icopsTracker.setAdditionalDetails(convertProcessReportData(icopsProcessReport));
         return icopsTracker;

@@ -35,13 +35,11 @@ public class IcopsService {
     private final PoliceJurisdictionUtil policeJurisdictionUtil;
 
 
-    private final IcopsUtil icopsUtil;
-
     private final Producer producer;
 
     @Autowired
     public IcopsService(AuthUtil authUtil, AuthenticationManager authenticationManager,
-                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil, IcopsUtil icopsUtil, Producer producer) {
+                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil, Producer producer) {
 
         this.authUtil = authUtil;
         this.authenticationManager = authenticationManager;
@@ -51,7 +49,6 @@ public class IcopsService {
         this.summonsUtil = summonsUtil;
         this.requestInfoGenerator = requestInfoGenerator;
         this.policeJurisdictionUtil = policeJurisdictionUtil;
-        this.icopsUtil = icopsUtil;
         this.producer = producer;
     }
 
@@ -76,11 +73,11 @@ public class IcopsService {
         IcopsTracker icopsTracker = null;
         if(channelMessage.getAcknowledgementStatus().equalsIgnoreCase("SUCCESS")) {
             log.info("successfully send request to icops");
-             icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.STATUS_UNKNOWN);
+             icopsTracker = icopsEnrichment.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.STATUS_UNKNOWN);
         }
         else {
             log.error("Failure message",channelMessage.getFailureMsg());
-            icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.FAILED);
+            icopsTracker = icopsEnrichment.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.FAILED);
         }
         IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
         producer.push("save-icops-tracker", request);
@@ -100,14 +97,28 @@ public class IcopsService {
     public ChannelMessage processPoliceReport(IcopsProcessReport icopsProcessReport) {
 
         IcopsTracker icopsTracker = icopsEnrichment.enrichIcopsTrackerForUpdate(icopsProcessReport);
+        updateIcopsTracker(icopsTracker,icopsProcessReport);
         RequestInfo requestInfo = new RequestInfo();
         IcopsRequest icopsRequest = IcopsRequest.builder().requestInfo(requestInfo).icopsTracker(icopsTracker).build();
         producer.push("update-icops-tracker",icopsRequest);
-        //ChannelReport channelReport = icopsEnrichment.getChannelReport(icopsProcessReport);
-//        UpdateSummonsRequest request = UpdateSummonsRequest.builder()
-//                .requestInfo(requestInfoGenerator.generateSystemRequestInfo()).channelReport(channelReport).build();
-//        return summonsUtil.updateSummonsDeliveryStatus(request);
         return ChannelMessage.builder().acknowledgeUniqueNumber(icopsTracker.getTaskNumber()).build();
+    }
+
+    private void updateIcopsTracker(IcopsTracker icopsTracker, IcopsProcessReport icopsProcessReport) {
+
+        icopsTracker.setRowVersion(icopsTracker.getRowVersion() + 1);
+        if(icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("Executed")){
+            icopsTracker.setDeliveryStatus(DeliveryStatus.DELIVERY_SUCCESSFUL);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessActionRemarks());
+        }
+        else if(icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("Not Executed")) {
+            icopsTracker.setDeliveryStatus(DeliveryStatus.DELIVERY_FAILED);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessFailureReason());
+        }
+        else{
+            icopsTracker.setDeliveryStatus(DeliveryStatus.PENDING);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessFailureReason());
+        }
     }
 
     public LocationBasedJurisdiction getLocationBasedJurisdiction(Location location) throws Exception {
