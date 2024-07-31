@@ -31,11 +31,16 @@ public class SummonsUtil {
         this.objectMapper = objectMapper;
     }
 
-    public ChannelMessage updateSummonsDeliveryStatus(UpdateSummonsRequest request) {
+    public ChannelMessage updateSummonsDeliveryStatus(IcopsRequest request) {
         String summonsUrl = config.getSummonsHost() + config.getSummonsUpdateEndPoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UpdateSummonsRequest> requestEntity = new HttpEntity<>(request, headers);
+        ChannelReport channelReport = ChannelReport.builder()
+                .summonId(request.getIcopsTracker().getProcessNumber())
+                .deliveryStatus(request.getIcopsTracker().getDeliveryStatus().toString())
+                .additionalFields((AdditionalFields) request.getIcopsTracker().getAdditionalDetails()).build();
+        UpdateSummonsRequest summonsRequest = UpdateSummonsRequest.builder().requestInfo(request.getRequestInfo()).channelReport(channelReport).build();
+        HttpEntity<UpdateSummonsRequest> requestEntity = new HttpEntity<>(summonsRequest, headers);
         try {
             // Send the request and get the response
             ResponseEntity<Object> responseEntity =

@@ -5,6 +5,7 @@ import com.egov.icops_integrationkerala.kafka.Producer;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.egov.common.contract.request.RequestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,11 +76,11 @@ public class IcopsService {
         IcopsTracker icopsTracker = null;
         if(channelMessage.getAcknowledgementStatus().equalsIgnoreCase("SUCCESS")) {
             log.info("successfully send request to icops");
-             icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.SUCCESSFULLY_ACCEPTED);
+             icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.STATUS_UNKNOWN);
         }
         else {
             log.error("Failure message",channelMessage.getFailureMsg());
-            icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.NOT_ACCEPTED);
+            icopsTracker = icopsUtil.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.FAILED);
         }
         IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
         producer.push("save-icops-tracker", request);
@@ -97,10 +98,16 @@ public class IcopsService {
     }
 
     public ChannelMessage processPoliceReport(IcopsProcessReport icopsProcessReport) {
-        ChannelReport channelReport = icopsEnrichment.getChannelReport(icopsProcessReport);
-        UpdateSummonsRequest request = UpdateSummonsRequest.builder()
-                .requestInfo(requestInfoGenerator.generateSystemRequestInfo()).channelReport(channelReport).build();
-        return summonsUtil.updateSummonsDeliveryStatus(request);
+
+        IcopsTracker icopsTracker = icopsEnrichment.enrichIcopsTrackerForUpdate(icopsProcessReport);
+        RequestInfo requestInfo = new RequestInfo();
+        IcopsRequest icopsRequest = IcopsRequest.builder().requestInfo(requestInfo).icopsTracker(icopsTracker).build();
+        producer.push("update-icops-tracker",icopsRequest);
+        //ChannelReport channelReport = icopsEnrichment.getChannelReport(icopsProcessReport);
+//        UpdateSummonsRequest request = UpdateSummonsRequest.builder()
+//                .requestInfo(requestInfoGenerator.generateSystemRequestInfo()).channelReport(channelReport).build();
+//        return summonsUtil.updateSummonsDeliveryStatus(request);
+        return ChannelMessage.builder().acknowledgeUniqueNumber(icopsTracker.getTaskNumber()).build();
     }
 
     public LocationBasedJurisdiction getLocationBasedJurisdiction(Location location) throws Exception {

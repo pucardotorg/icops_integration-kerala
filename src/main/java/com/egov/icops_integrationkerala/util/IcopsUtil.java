@@ -2,6 +2,7 @@ package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.*;
+import com.egov.icops_integrationkerala.repository.IcopsRepository;
 import org.egov.common.contract.models.AuditDetails;
 import org.egov.common.contract.request.RequestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +10,19 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Component
 public class IcopsUtil {
 
     private final IcopsConfiguration config;
 
+    private final IcopsRepository repository;
+
     @Autowired
-    public IcopsUtil(IcopsConfiguration config) {
+    public IcopsUtil(IcopsConfiguration config, IcopsRepository repository) {
         this.config = config;
+        this.repository = repository;
     }
 
     public IcopsTracker createPostTrackerBody(TaskRequest request, ProcessRequest processRequest, ChannelMessage channelMessage, DeliveryStatus status) {
@@ -36,18 +41,8 @@ public class IcopsUtil {
                 .rowVersion(0)
                 .bookingDate(currentDate)
                 .acknowledgementId(channelMessage.getAcknowledgeUniqueNumber())
-                .auditDetails(createAuditDetails(request.getRequestInfo()))
                 .build();
     }
 
-    private AuditDetails createAuditDetails(RequestInfo requestInfo) {
-        long currentTime = System.currentTimeMillis();
-        String userId = requestInfo.getUserInfo().getUuid();
-        return AuditDetails.builder()
-                .createdBy(userId)
-                .createdTime(currentTime)
-                .lastModifiedBy(userId)
-                .lastModifiedTime(currentTime)
-                .build();
-    }
+
 }

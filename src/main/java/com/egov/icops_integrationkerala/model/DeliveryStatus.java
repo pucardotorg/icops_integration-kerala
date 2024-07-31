@@ -5,5 +5,11 @@ public enum DeliveryStatus {
 
     SUCCESSFULLY_ACCEPTED,
 
-    NOT_ACCEPTED
+    NOT_ACCEPTED,
+
+    PENDING,
+
+    FAILED,
+
+    STATUS_UNKNOWN
 }

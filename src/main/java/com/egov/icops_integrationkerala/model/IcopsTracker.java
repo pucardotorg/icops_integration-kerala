@@ -1,7 +1,6 @@
 package com.egov.icops_integrationkerala.model;
 
 import lombok.*;
-import org.egov.common.contract.models.AuditDetails;
 
 @Getter
 @Setter
@@ -22,5 +21,4 @@ public class IcopsTracker {
     private String bookingDate;
     private String receivedDate;
     private String acknowledgementId;
-    private AuditDetails auditDetails;
 }

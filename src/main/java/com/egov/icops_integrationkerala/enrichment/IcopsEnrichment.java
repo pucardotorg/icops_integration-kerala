@@ -2,16 +2,21 @@ package com.egov.icops_integrationkerala.enrichment;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.*;
+import com.egov.icops_integrationkerala.repository.IcopsRepository;
 import com.egov.icops_integrationkerala.util.DateStringConverter;
 import com.egov.icops_integrationkerala.util.FileStorageUtil;
+import com.egov.icops_integrationkerala.util.IdgenUtil;
+import com.egov.icops_integrationkerala.util.MdmsUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONArray;
+import org.egov.common.contract.models.AuditDetails;
+import org.egov.common.contract.request.RequestInfo;
 import org.egov.tracer.model.CustomException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -22,13 +27,22 @@ public class IcopsEnrichment {
     private final IcopsConfiguration config;
 
     private final DateStringConverter converter;
+    private final MdmsUtil util;
+
+    private final IdgenUtil idgenUtil;
+
+    private final IcopsRepository repository;
 
 
+    @Autowired
     public IcopsEnrichment(FileStorageUtil fileStorageUtil, IcopsConfiguration config,
-                           DateStringConverter converter) {
+                           DateStringConverter converter, MdmsUtil util, IdgenUtil idgenUtil, IcopsRepository repository) {
         this.fileStorageUtil = fileStorageUtil;
         this.config = config;
         this.converter = converter;
+        this.util = util;
+        this.idgenUtil = idgenUtil;
+        this.repository = repository;
     }
 
     public ProcessRequest getProcessRequest(Task task) {
@@ -87,21 +101,28 @@ public class IcopsEnrichment {
         processRequest.setProcessReceiverType("W");
     }
 
-    public ChannelReport getChannelReport(IcopsProcessReport icopsProcessReport) {
-        ChannelReport channelReport = new ChannelReport();
-        channelReport.setSummonId(icopsProcessReport.getProcessUniqueId());
-        if (icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("SERVED")) {
-            channelReport.setDeliveryStatus("DELIVERED_SUCCESSFULLY");
-        } else if (icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("NOT_SERVED") ||
-                icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("NOT_ARRESTED") ) {
-            channelReport.setDeliveryStatus("SUMMONS_NOT_SERVED");
-        } else if (icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("RETURNED")) {
-            channelReport.setDeliveryStatus("SUMMONS_FAILED");
-        } else {
-            channelReport.setDeliveryStatus("SUMMONS_STATUS_UNKNOWN");
+    public IcopsTracker enrichIcopsTrackerForUpdate(IcopsProcessReport icopsProcessReport) {
+        List<IcopsTracker> icopsTrackers = repository.getIcopsTracker(icopsProcessReport.getProcessUniqueId());
+        if (icopsTrackers.size() != 1) {
+            throw new RuntimeException("Invalid Icops Tracker field with processNumber : " + icopsProcessReport.getProcessUniqueId());
         }
-        channelReport.setAdditionalFields(convertProcessReportData(icopsProcessReport));
-        return channelReport;
+        IcopsTracker icopsTracker = icopsTrackers.get(0);
+
+        if(icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("Executed")){
+            icopsTracker.setDeliveryStatus(DeliveryStatus.SUCCESSFULLY_ACCEPTED);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessActionRemarks());
+        }
+        else if(icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("Not Executed")) {
+            icopsTracker.setDeliveryStatus(DeliveryStatus.NOT_ACCEPTED);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessFailureReason());
+        }
+        else{
+            icopsTracker.setDeliveryStatus(DeliveryStatus.PENDING);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessFailureReason());
+        }
+
+        icopsTracker.setAdditionalDetails(convertProcessReportData(icopsProcessReport));
+        return icopsTracker;
     }
 
     private AdditionalFields convertProcessReportData(IcopsProcessReport icopsProcessReport) {
