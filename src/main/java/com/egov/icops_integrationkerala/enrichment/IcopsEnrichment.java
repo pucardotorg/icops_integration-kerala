@@ -47,7 +47,8 @@ public class IcopsEnrichment {
         this.repository = repository;
     }
 
-    public ProcessRequest getProcessRequest(Task task) {
+    public ProcessRequest getProcessRequest(TaskRequest taskRequest) {
+        Task task = taskRequest.getTask();
         TaskDetails taskDetails = task.getTaskDetails();
         String fileStoreId = task.getDocuments().get(0).getFileStore();
         String docFileString = fileStorageUtil.getFileFromFileStoreService(fileStoreId, config.getEgovStateTenantId());
