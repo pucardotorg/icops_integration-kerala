@@ -24,7 +24,14 @@ jobs:
         run: |
           docker build -t pucarsolutionsdev.azurecr.io/integration:v1.0.0-${{ github.sha }} -f build/maven/Dockerfile .
           docker push pucarsolutionsdev.azurecr.io/integration:v1.0.0-${{ github.sha }}
-          
+
+      - name: Build and Push Docker image for integration_DB
+        run: |
+          docker build -t pucarsolutionsdev.azurecr.io/integration_db:v1.0.0-${{ github.sha }}  .
+          docker push pucarsolutionsdev.azurecr.io/integration_db:v1.0.0-${{ github.sha }}
+        working-directory: src/main/resources/db
+
+
       - name: Trigger Deployment Pipeline for Icops-image
         run: |
            curl -X POST \
