@@ -53,7 +53,8 @@ public class ProcessRequestUtil {
             return objectMapper.convertValue(responseEntity.getBody(), ChannelMessage.class);
         } catch (RestClientException e) {
             log.error("Error occurred when sending Process Request ", e);
-            throw new CustomException("ICOPS_PROCESS_REQUEST_ERROR","Error occurred when sending Process Request");
+
+            return ChannelMessage.builder().acknowledgementStatus("FAILURE").failureMsg("Failed to connect to ICOPS").build();
         }
     }
 }

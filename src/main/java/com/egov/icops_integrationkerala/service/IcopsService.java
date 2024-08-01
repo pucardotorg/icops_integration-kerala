@@ -1,9 +1,11 @@
 package com.egov.icops_integrationkerala.service;
 
 import com.egov.icops_integrationkerala.enrichment.IcopsEnrichment;
+import com.egov.icops_integrationkerala.kafka.Producer;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.egov.common.contract.request.RequestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,9 +34,12 @@ public class IcopsService {
 
     private final PoliceJurisdictionUtil policeJurisdictionUtil;
 
+
+    private final Producer producer;
+
     @Autowired
     public IcopsService(AuthUtil authUtil, AuthenticationManager authenticationManager,
-                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil) {
+                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil, Producer producer) {
 
         this.authUtil = authUtil;
         this.authenticationManager = authenticationManager;
@@ -44,11 +49,11 @@ public class IcopsService {
         this.summonsUtil = summonsUtil;
         this.requestInfoGenerator = requestInfoGenerator;
         this.policeJurisdictionUtil = policeJurisdictionUtil;
+        this.producer = producer;
     }
 
 
     public ChannelMessage sendRequestToIcops(TaskRequest taskRequest) throws Exception {
-
 
         ProcessRequest processRequest = icopsEnrichment.getProcessRequest(taskRequest);
 
@@ -63,7 +68,21 @@ public class IcopsService {
 
         AuthResponse authResponse = authUtil.authenticateAndGetToken();
 
-        return processRequestUtil.callProcessRequest(authResponse, processRequest);
+        ChannelMessage channelMessage = processRequestUtil.callProcessRequest(authResponse, processRequest);
+
+        IcopsTracker icopsTracker = null;
+        if(channelMessage.getAcknowledgementStatus().equalsIgnoreCase("SUCCESS")) {
+            log.info("successfully send request to icops");
+             icopsTracker = icopsEnrichment.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.STATUS_UNKNOWN);
+        }
+        else {
+            log.error("Failure message",channelMessage.getFailureMsg());
+            icopsTracker = icopsEnrichment.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.FAILED);
+        }
+        IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
+        producer.push("save-icops-tracker", request);
+
+        return channelMessage;
     }
 
     public AuthResponse generateAuthToken(String serviceName, String serviceKey, String authType) throws Exception {
@@ -76,10 +95,30 @@ public class IcopsService {
     }
 
     public ChannelMessage processPoliceReport(IcopsProcessReport icopsProcessReport) {
-        ChannelReport channelReport = icopsEnrichment.getChannelReport(icopsProcessReport);
-        UpdateSummonsRequest request = UpdateSummonsRequest.builder()
-                .requestInfo(requestInfoGenerator.generateSystemRequestInfo()).channelReport(channelReport).build();
-        return summonsUtil.updateSummonsDeliveryStatus(request);
+
+        IcopsTracker icopsTracker = icopsEnrichment.enrichIcopsTrackerForUpdate(icopsProcessReport);
+        updateIcopsTracker(icopsTracker,icopsProcessReport);
+        RequestInfo requestInfo = new RequestInfo();
+        IcopsRequest icopsRequest = IcopsRequest.builder().requestInfo(requestInfo).icopsTracker(icopsTracker).build();
+        producer.push("update-icops-tracker",icopsRequest);
+        return ChannelMessage.builder().acknowledgeUniqueNumber(icopsTracker.getTaskNumber()).build();
+    }
+
+    private void updateIcopsTracker(IcopsTracker icopsTracker, IcopsProcessReport icopsProcessReport) {
+
+        icopsTracker.setRowVersion(icopsTracker.getRowVersion() + 1);
+        if(icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("Executed")){
+            icopsTracker.setDeliveryStatus(DeliveryStatus.DELIVERY_SUCCESSFUL);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessActionRemarks());
+        }
+        else if(icopsProcessReport.getProcessActionStatus().equalsIgnoreCase("Not Executed")) {
+            icopsTracker.setDeliveryStatus(DeliveryStatus.DELIVERY_FAILED);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessFailureReason());
+        }
+        else{
+            icopsTracker.setDeliveryStatus(DeliveryStatus.PENDING);
+            icopsTracker.setRemarks(icopsProcessReport.getProcessFailureReason());
+        }
     }
 
     public LocationBasedJurisdiction getLocationBasedJurisdiction(Location location) throws Exception {
