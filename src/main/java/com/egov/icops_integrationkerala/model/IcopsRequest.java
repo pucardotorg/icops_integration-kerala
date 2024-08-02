@@ -18,7 +18,7 @@ public class IcopsRequest {
     @Valid
     private RequestInfo requestInfo;
 
-    @JsonProperty("icopsTracker")
+    @JsonProperty("IcopsTracker")
     @Valid
     private IcopsTracker icopsTracker;
 }
