@@ -221,7 +221,7 @@ public class IcopsEnrichment {
                 fieldsList.add(new Field("policeReportFileStoreId", fileStoreId));
             } catch (IOException e) {
                 log.error("Error occurred when generating file from base64 string", e);
-                throw new CustomException("SUMMONS_FILE_SAVE_ERROR", "Failed to generate file from base64 string");
+                throw new ProcessReportException("Failed to generate file from base64 string");
             } finally {
                 File file = new File(filePath);
                 if (file.exists() && file.isFile()) {
