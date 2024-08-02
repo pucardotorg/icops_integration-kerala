@@ -76,10 +76,10 @@ public class IcopsEnrichment {
                 .processReceiverDistrict(taskDetails.getRespondentDetails().getDistrict())
                 .processReceiverPincode(taskDetails.getRespondentDetails().getPinCode())
                 .processPartyType(taskDetails.getSummonDetails().getPartyType())
-                .processDocType(docTypeInfo.get("name"))
-                .processDocTypeCode(docTypeInfo.get("docTypeCode"))
-                .processDocSubType(docTypeInfo.get("subType"))
-                .processDocSubTypeCode(docTypeInfo.get("code"))
+                .processDocType(docTypeInfo != null ? docTypeInfo.get("name") : null)
+                .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get("docTypeCode") : null)
+                .processDocSubType(docTypeInfo != null ? docTypeInfo.get("subType") : null)
+                .processDocSubTypeCode(docTypeInfo != null ? docTypeInfo.get("code") : null)
                 .processCino(task.getCnrNumber())
                 .cnrNo(task.getCnrNumber())
                 .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
@@ -240,7 +240,7 @@ public class IcopsEnrichment {
         List<String> masterList = new ArrayList<>();
         masterList.add("docType");
         masterList.add("docSubType");
-
+        masterList.add("actionStatus");
         return masterList;
     }
     public Map<String, String> getDocTypeCode(Map<String, Map<String, JSONArray>> mdmsData, String masterString) {
