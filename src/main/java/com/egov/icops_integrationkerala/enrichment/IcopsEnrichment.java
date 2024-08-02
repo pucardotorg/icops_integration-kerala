@@ -49,8 +49,12 @@ public class IcopsEnrichment {
 
     public ProcessRequest getProcessRequest(TaskRequest taskRequest) {
         Task task = taskRequest.getTask();
+        RequestInfo requestInfo = taskRequest.getRequestInfo();
         TaskDetails taskDetails = task.getTaskDetails();
         String fileStoreId = task.getDocuments().get(0).getFileStore();
+        Map<String, Map<String, JSONArray>> mdmsData = util.fetchMdmsData(requestInfo, config.getEgovStateTenantId(),
+                config.getIcopsBusinessServiceName(), createMasterDetails());
+        Map<String, String> docTypeInfo = getDocTypeCode(mdmsData,taskDetails.getSummonDetails().getDocSubType());
         String docFileString = fileStorageUtil.getFileFromFileStoreService(fileStoreId, config.getEgovStateTenantId());
         String processUniqueId = idgenUtil.getIdList(taskRequest.getRequestInfo(), config.getEgovStateTenantId(),
                 config.getIdName(),null,1).get(0);
@@ -72,11 +76,15 @@ public class IcopsEnrichment {
                 .processReceiverDistrict(taskDetails.getRespondentDetails().getDistrict())
                 .processReceiverPincode(taskDetails.getRespondentDetails().getPinCode())
                 .processPartyType(taskDetails.getSummonDetails().getPartyType())
-                .processDocType(taskDetails.getSummonDetails().getDocType())
-                .processDocSubType(taskDetails.getSummonDetails().getDocSubType())
+                .processDocType(docTypeInfo != null ? docTypeInfo.get("name") : null)
+                .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get("docTypeCode") : null)
+                .processDocSubType(docTypeInfo != null ? docTypeInfo.get("subType") : null)
+                .processDocSubTypeCode(docTypeInfo != null ? docTypeInfo.get("code") : null)
                 .processCino(task.getCnrNumber())
                 .cnrNo(task.getCnrNumber())
                 .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
+                .processOrigin(config.getProcessOrigin())
+                .processInvAgency(config.getProcessInvAgency())
                 .build();
         enrichPoliceStationDetails(processRequest);
         return processRequest;
@@ -85,23 +93,23 @@ public class IcopsEnrichment {
 
     private void enrichPoliceStationDetails(ProcessRequest processRequest) {
         log.info("Enriching Process Request Data for Case No: {}", processRequest.getProcessCaseno());
-        processRequest.setProcessDocTypeCode("2");
-        processRequest.setProcessDocSubTypeCode("2000020");
+
         processRequest.setProcessPoliceStationCode("15290042");
         processRequest.setProcessPoliceStationName("PUDUKKADU");
-        processRequest.setProcessOrigin("DRISTI");
+        processRequest.setCaseListedDate(converter.convertDate("2024-04-01"));
+
+
         processRequest.setProcessCourtCode("KLTR13");
-        processRequest.setProcessFirYear("2019");
-        processRequest.setProcessFirPScode("15290042");
-        processRequest.setProcessFirSrlno("1268");
+//        processRequest.setProcessFirYear("2019");
+//        processRequest.setProcessFirPScode("15290042");
+//        processRequest.setProcessFirSrlno("1268");
         processRequest.setProcessPartyNumber("10");
         processRequest.setProcessReceiverTaluka("Mukundapuram");
         processRequest.setProcessRespondantType("W");
-        processRequest.setCaseListedDate(converter.convertDate("2024-04-01"));
+
         //processRequest.setCourtBenchCd("1");
-        //processRequest.setProcessInvAgency("Police");
         //processRequest.setCourtBenchName("Principal Sub Judge");
-        processRequest.setProcessReceiverType("W");
+//        processRequest.setProcessReceiverType("W");
     }
 
     public IcopsTracker createPostTrackerBody(TaskRequest request, ProcessRequest processRequest, ChannelMessage channelMessage, DeliveryStatus status) {
@@ -225,5 +233,49 @@ public class IcopsEnrichment {
         }
         additionalFields.setFields(fieldsList);
         return additionalFields;
+    }
+
+
+    private List<String> createMasterDetails() {
+        List<String> masterList = new ArrayList<>();
+        masterList.add("docType");
+        masterList.add("docSubType");
+        masterList.add("actionStatus");
+        return masterList;
+    }
+    public Map<String, String> getDocTypeCode(Map<String, Map<String, JSONArray>> mdmsData, String masterString) {
+
+        if (mdmsData != null && mdmsData.containsKey(config.getIcopsBusinessServiceName()) && mdmsData.get(config.getIcopsBusinessServiceName()).containsKey("docSubType")) {
+            JSONArray docSubType = mdmsData.get(config.getIcopsBusinessServiceName()).get("docSubType");
+            JSONArray docsType = mdmsData.get(config.getIcopsBusinessServiceName()).get("docType");
+            Map<String, String> result = new HashMap<>();
+            for (Object docSubTypeObj : docSubType) {
+                Map<String, String> subType = (Map<String, String>) docSubTypeObj;
+                if (masterString.equals(subType.get("name"))) {
+                    result.put("code", subType.get("code"));
+                    result.put("docTypeCode", subType.get("docTypeCode"));
+                    result.put("subType",subType.get("subType"));
+                }
+            }
+            for (Object docTypeObj : docsType) {
+                Map<String, String> docType = (Map<String, String>) docTypeObj;
+                if (result.get("docTypeCode") != null && result.get("docTypeCode").equals(docType.get("code"))) {
+                    result.put("name", docType.get("type"));
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    private AuditDetails createAuditDetails(RequestInfo requestInfo) {
+        long currentTime = System.currentTimeMillis();
+        String userId = requestInfo.getUserInfo().getUuid();
+        return AuditDetails.builder()
+                .createdBy(userId)
+                .createdTime(currentTime)
+                .lastModifiedBy(userId)
+                .lastModifiedTime(currentTime)
+                .build();
     }
 }

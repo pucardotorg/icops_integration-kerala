@@ -100,8 +100,8 @@ public class ProcessRequest {
     @JsonProperty("processReceiverEmail")
     private String processReceiverEmail;
 
-    //@JsonProperty("processInvAgency")
-    //private String processInvAgency;
+    @JsonProperty("processInvAgency")
+    private String processInvAgency;
 
     @JsonProperty("processFirPScode")
     private String processFirPScode;
