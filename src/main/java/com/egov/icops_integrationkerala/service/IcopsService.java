@@ -94,7 +94,7 @@ public class IcopsService {
         }
     }
 
-    public ChannelMessage processPoliceReport(IcopsProcessReport icopsProcessReport) {
+    public ChannelMessage processPoliceReport(IcopsProcessReport icopsProcessReport) throws ProcessReportException {
 
         IcopsTracker icopsTracker = icopsEnrichment.enrichIcopsTrackerForUpdate(icopsProcessReport);
         updateIcopsTracker(icopsTracker,icopsProcessReport);

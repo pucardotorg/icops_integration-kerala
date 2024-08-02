@@ -3,10 +3,7 @@ package com.egov.icops_integrationkerala.enrichment;
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.repository.IcopsRepository;
-import com.egov.icops_integrationkerala.util.DateStringConverter;
-import com.egov.icops_integrationkerala.util.FileStorageUtil;
-import com.egov.icops_integrationkerala.util.IdgenUtil;
-import com.egov.icops_integrationkerala.util.MdmsUtil;
+import com.egov.icops_integrationkerala.util.*;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import org.egov.common.contract.models.AuditDetails;
@@ -131,11 +128,11 @@ public class IcopsEnrichment {
                 .build();
     }
 
-    public IcopsTracker enrichIcopsTrackerForUpdate(IcopsProcessReport icopsProcessReport) {
+    public IcopsTracker enrichIcopsTrackerForUpdate(IcopsProcessReport icopsProcessReport) throws ProcessReportException {
         List<IcopsTracker> icopsTrackers = repository.getIcopsTracker(icopsProcessReport.getProcessUniqueId());
         if (icopsTrackers.size() != 1) {
             log.error("Process Unique Id is not valid {}", icopsProcessReport.getProcessUniqueId());
-            throw new CustomException("INVALID_PROCESS_UNIQUE_ID", "Given processUniqueId is not valid");
+            throw new ProcessReportException("ProcessUniqueId is either null or not valid");
         }
         IcopsTracker icopsTracker = icopsTrackers.get(0);
 
