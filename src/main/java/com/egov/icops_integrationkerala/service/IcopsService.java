@@ -101,7 +101,7 @@ public class IcopsService {
         RequestInfo requestInfo = new RequestInfo();
         IcopsRequest icopsRequest = IcopsRequest.builder().requestInfo(requestInfo).icopsTracker(icopsTracker).build();
         producer.push("update-icops-tracker",icopsRequest);
-        return ChannelMessage.builder().acknowledgeUniqueNumber(icopsTracker.getTaskNumber()).build();
+        return ChannelMessage.builder().acknowledgeUniqueNumber(icopsTracker.getTaskNumber()).acknowledgementStatus("SUCCESS").build();
     }
 
     private void updateIcopsTracker(IcopsTracker icopsTracker, IcopsProcessReport icopsProcessReport) {

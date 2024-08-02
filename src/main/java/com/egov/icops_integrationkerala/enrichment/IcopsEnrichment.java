@@ -134,7 +134,8 @@ public class IcopsEnrichment {
     public IcopsTracker enrichIcopsTrackerForUpdate(IcopsProcessReport icopsProcessReport) {
         List<IcopsTracker> icopsTrackers = repository.getIcopsTracker(icopsProcessReport.getProcessUniqueId());
         if (icopsTrackers.size() != 1) {
-            throw new RuntimeException("Invalid Icops Tracker field with processNumber : " + icopsProcessReport.getProcessUniqueId());
+            log.error("Process Unique Id is not valid {}", icopsProcessReport.getProcessUniqueId());
+            throw new CustomException("INVALID_PROCESS_UNIQUE_ID", "Given processUniqueId is not valid");
         }
         IcopsTracker icopsTracker = icopsTrackers.get(0);
 
