@@ -37,6 +37,7 @@ public class IcopsService {
 
     private final Producer producer;
 
+
     @Autowired
     public IcopsService(AuthUtil authUtil, AuthenticationManager authenticationManager,
                         JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil, Producer producer) {
@@ -98,7 +99,7 @@ public class IcopsService {
 
         IcopsTracker icopsTracker = icopsEnrichment.enrichIcopsTrackerForUpdate(icopsProcessReport);
         updateIcopsTracker(icopsTracker,icopsProcessReport);
-        RequestInfo requestInfo = new RequestInfo();
+        RequestInfo requestInfo = requestInfoGenerator.generateSystemRequestInfo();
         IcopsRequest icopsRequest = IcopsRequest.builder().requestInfo(requestInfo).icopsTracker(icopsTracker).build();
         producer.push("update-icops-tracker",icopsRequest);
         return ChannelMessage.builder().acknowledgeUniqueNumber(icopsTracker.getTaskNumber()).acknowledgementStatus("SUCCESS").build();
