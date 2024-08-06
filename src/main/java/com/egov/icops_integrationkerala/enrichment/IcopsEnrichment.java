@@ -55,58 +55,75 @@ public class IcopsEnrichment {
         String docFileString = fileStorageUtil.getFileFromFileStoreService(fileStoreId, config.getEgovStateTenantId());
         String processUniqueId = idgenUtil.getIdList(taskRequest.getRequestInfo(), config.getEgovStateTenantId(),
                 config.getIdName(),null,1).get(0);
-        ProcessRequest processRequest = ProcessRequest.builder()
-                .processCaseno(taskDetails.getCaseDetails().getCaseId())
-                .processDoc(docFileString)
-                .processUniqueId(processUniqueId)
-                .processCourtName(taskDetails.getCaseDetails().getCourtName())
-                .processJudge(taskDetails.getCaseDetails().getJudgeName())
-                .processIssueDate(converter.convertDate(taskDetails.getSummonDetails().getIssueDate()))
-                .processNextHearingDate(converter.convertDate(taskDetails.getCaseDetails().getHearingDate()))
-                .processRespondentName(taskDetails.getRespondentDetails().getName())
-                .processRespondentGender(taskDetails.getRespondentDetails().getGender())
-                .processRespondentAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
-                .processRespondentRelativeName(taskDetails.getRespondentDetails().getRelativeName())
-                .processRespondentRelation(taskDetails.getRespondentDetails().getRelationWithRelative())
-                .processReceiverAddress(taskDetails.getRespondentDetails().getAddress())
-                .processReceiverState(taskDetails.getRespondentDetails().getState())
-                .processReceiverDistrict(taskDetails.getRespondentDetails().getDistrict())
-                .processReceiverPincode(taskDetails.getRespondentDetails().getPinCode())
-                .processPartyType(taskDetails.getSummonDetails().getPartyType())
-                .processDocType(docTypeInfo != null ? docTypeInfo.get("name") : null)
-                .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get("docTypeCode") : null)
-                .processDocSubType(docTypeInfo != null ? docTypeInfo.get("subType") : null)
-                .processDocSubTypeCode(docTypeInfo != null ? docTypeInfo.get("code") : null)
-                .processCino(task.getCnrNumber())
-                .cnrNo(task.getCnrNumber())
-                .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
-                .processOrigin(config.getProcessOrigin())
-                .processInvAgency(config.getProcessInvAgency())
-                .build();
-        enrichPoliceStationDetails(processRequest);
+        ProcessRequest processRequest;
+        if(!task.getTaskType().isEmpty() && task.getTaskType().equalsIgnoreCase("warrant")){
+            PartyData partyData = PartyData.builder()
+                    .spartyAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
+                    .spartyName(taskDetails.getRespondentDetails().getName())
+                    .spartyType("A")
+                    .spartyEmail(taskDetails.getRespondentDetails().getEmail())
+                    .spartyState(taskDetails.getRespondentDetails().getState())
+                    .spartyGender(taskDetails.getRespondentDetails().getGender())
+                    .spartyMobile(taskDetails.getRespondentDetails().getPhone())
+                    .spartyAddress(taskDetails.getRespondentDetails().getAddress())
+                    .spartyDistrict(taskDetails.getRespondentDetails().getDistrict())
+                    .spartyRelationName(taskDetails.getRespondentDetails().getRelativeName())
+                    .spartyRelationType(taskDetails.getRespondentDetails().getRelationWithRelative())
+                    .build();
+             processRequest = ProcessRequest.builder()
+                    .partyData(partyData)
+                    .processCaseno(taskDetails.getCaseDetails().getCaseId())
+                    .processDoc(docFileString)
+                    .processUniqueId(processUniqueId)
+                    .processCourtName(taskDetails.getCaseDetails().getCourtName())
+                    .processJudge(taskDetails.getCaseDetails().getJudgeName())
+                    .processIssueDate(converter.convertDate(taskDetails.getSummonDetails().getIssueDate()))
+                    .processNextHearingDate(converter.convertDate(taskDetails.getCaseDetails().getHearingDate()))
+                    .processPartyType(taskDetails.getSummonDetails().getPartyType())
+                    .processDocType(docTypeInfo != null ? docTypeInfo.get("name") : null)
+                    .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get("docTypeCode") : null)
+                    .processDocSubType(docTypeInfo != null ? docTypeInfo.get("subType") : null)
+                    .processDocSubTypeCode(docTypeInfo != null ? docTypeInfo.get("code") : null)
+                    .processCino(task.getCnrNumber())
+                    .cnrNo(task.getCnrNumber())
+                    .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
+                    .processOrigin(config.getProcessOrigin())
+                    .processInvAgency(config.getProcessInvAgency())
+                    .build();
+        }
+        else{
+             processRequest = ProcessRequest.builder()
+                    .processCaseno(taskDetails.getCaseDetails().getCaseId())
+                    .processDoc(docFileString)
+                    .processUniqueId(processUniqueId)
+                    .processCourtName(taskDetails.getCaseDetails().getCourtName())
+                    .processJudge(taskDetails.getCaseDetails().getJudgeName())
+                    .processIssueDate(converter.convertDate(taskDetails.getSummonDetails().getIssueDate()))
+                    .processNextHearingDate(converter.convertDate(taskDetails.getCaseDetails().getHearingDate()))
+                    .processRespondentName(taskDetails.getRespondentDetails().getName())
+                    .processRespondentGender(taskDetails.getRespondentDetails().getGender())
+                    .processRespondentAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
+                    .processRespondentRelativeName(taskDetails.getRespondentDetails().getRelativeName())
+                    .processRespondentRelation(taskDetails.getRespondentDetails().getRelationWithRelative())
+                    .processReceiverAddress(taskDetails.getRespondentDetails().getAddress())
+                    .processReceiverState(taskDetails.getRespondentDetails().getState())
+                    .processReceiverDistrict(taskDetails.getRespondentDetails().getDistrict())
+                    .processReceiverPincode(taskDetails.getRespondentDetails().getPinCode())
+                    .processPartyType(taskDetails.getSummonDetails().getPartyType())
+                    .processDocType(docTypeInfo != null ? docTypeInfo.get("name") : null)
+                    .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get("docTypeCode") : null)
+                    .processDocSubType(docTypeInfo != null ? docTypeInfo.get("subType") : null)
+                    .processDocSubTypeCode(docTypeInfo != null ? docTypeInfo.get("code") : null)
+                    .processCino(task.getCnrNumber())
+                    .cnrNo(task.getCnrNumber())
+                    .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
+                    .processOrigin(config.getProcessOrigin())
+                    .processInvAgency(config.getProcessInvAgency())
+                    .processRespondantType("A")
+                    .build();
+        }
+
         return processRequest;
-    }
-
-
-    private void enrichPoliceStationDetails(ProcessRequest processRequest) {
-        log.info("Enriching Process Request Data for Case No: {}", processRequest.getProcessCaseno());
-
-        processRequest.setProcessPoliceStationCode("15290042");
-        processRequest.setProcessPoliceStationName("PUDUKKADU");
-        processRequest.setCaseListedDate(converter.convertDate("2024-04-01"));
-
-
-        processRequest.setProcessCourtCode("KLTR13");
-//        processRequest.setProcessFirYear("2019");
-//        processRequest.setProcessFirPScode("15290042");
-//        processRequest.setProcessFirSrlno("1268");
-        processRequest.setProcessPartyNumber("10");
-        processRequest.setProcessReceiverTaluka("Mukundapuram");
-        processRequest.setProcessRespondantType("W");
-
-        //processRequest.setCourtBenchCd("1");
-        //processRequest.setCourtBenchName("Principal Sub Judge");
-//        processRequest.setProcessReceiverType("W");
     }
 
     public IcopsTracker createPostTrackerBody(TaskRequest request, ProcessRequest processRequest, ChannelMessage channelMessage, DeliveryStatus status) {
@@ -121,7 +138,6 @@ public class IcopsEnrichment {
                 .taskDetails(request.getTask().getTaskDetails())
                 .deliveryStatus(status)
                 .remarks(channelMessage.getFailureMsg())
-                .additionalDetails(request.getTask().getAdditionalDetails())
                 .rowVersion(0)
                 .bookingDate(currentDate)
                 .acknowledgementId(channelMessage.getAcknowledgeUniqueNumber())

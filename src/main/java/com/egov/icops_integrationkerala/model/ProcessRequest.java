@@ -10,6 +10,9 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProcessRequest {
 
+    @JsonProperty("sparty_data")
+    private PartyData partyData;
+
     @JsonProperty("processCaseno")
     private String processCaseno;
 

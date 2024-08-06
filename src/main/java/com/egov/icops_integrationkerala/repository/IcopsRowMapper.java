@@ -1,5 +1,6 @@
 package com.egov.icops_integrationkerala.repository;
 
+import com.egov.icops_integrationkerala.model.AdditionalFields;
 import com.egov.icops_integrationkerala.model.DeliveryStatus;
 import com.egov.icops_integrationkerala.model.IcopsTracker;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,6 +26,12 @@ public class IcopsRowMapper implements RowMapper<IcopsTracker> {
     @Override
     public IcopsTracker mapRow(ResultSet rs, int rowNum) throws SQLException {
         try {
+            AdditionalFields additionalFields = new AdditionalFields();
+            try {
+                additionalFields = objectMapper.readValue(rs.getString("additional_fields"), AdditionalFields.class);
+            } catch (JsonProcessingException e) {
+                throw new SQLException(e);
+            }
             return IcopsTracker.builder()
                     .processNumber(rs.getString("process_number"))
                     .tenantId(rs.getString("tenant_id"))
@@ -34,7 +41,7 @@ public class IcopsRowMapper implements RowMapper<IcopsTracker> {
                     .taskDetails(objectMapper.readValue(rs.getString("task_details"), Object.class))
                     .deliveryStatus(DeliveryStatus.valueOf(rs.getString("delivery_status")))
                     .remarks(rs.getString("remarks"))
-                    .additionalDetails(objectMapper.readValue(rs.getString("additional_details"), Object.class))
+                    .additionalDetails(additionalFields)
                     .rowVersion(rs.getInt("row_version"))
                     .bookingDate(rs.getString("booking_date"))
                     .receivedDate(rs.getString("received_date"))

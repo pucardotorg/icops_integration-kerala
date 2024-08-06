@@ -39,20 +39,11 @@ public class SummonsUtil {
         String summonsUrl = config.getSummonsHost() + config.getSummonsUpdateEndPoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        AdditionalFields additionalFields;
-        if (request.getIcopsTracker().getAdditionalDetails() instanceof Map) {
-            additionalFields = objectMapper.convertValue(
-                    request.getIcopsTracker().getAdditionalDetails(),
-                    AdditionalFields.class
-            );
-        } else {
-            String additionalDetailsJson = objectMapper.writeValueAsString(request.getIcopsTracker().getAdditionalDetails());
-            additionalFields = objectMapper.readValue(additionalDetailsJson, AdditionalFields.class);
-        }
+
         ChannelReport channelReport = ChannelReport.builder()
                 .summonId(request.getIcopsTracker().getProcessNumber())
                 .deliveryStatus(request.getIcopsTracker().getDeliveryStatus().toString())
-                .additionalFields(additionalFields).build();
+                .additionalFields(request.getIcopsTracker().getAdditionalDetails()).build();
         UpdateSummonsRequest summonsRequest = UpdateSummonsRequest.builder().requestInfo(request.getRequestInfo()).channelReport(channelReport).build();
         HttpEntity<UpdateSummonsRequest> requestEntity = new HttpEntity<>(summonsRequest, headers);
         try {
