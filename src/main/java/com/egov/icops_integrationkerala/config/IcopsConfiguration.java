@@ -81,4 +81,13 @@ public class IcopsConfiguration {
     @Value("${egov.idgen.name}")
     private String idName;
 
+    @Value("${egov.oauth.url}")
+    private String url;
+
+    @Value("${egov.user.username}")
+    private String username;
+
+    @Value("${egov.user.password}")
+    private String password;
+
 }
