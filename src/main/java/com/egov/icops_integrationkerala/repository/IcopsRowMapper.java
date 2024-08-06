@@ -28,7 +28,7 @@ public class IcopsRowMapper implements RowMapper<IcopsTracker> {
         try {
             AdditionalFields additionalFields = new AdditionalFields();
             try {
-                additionalFields = objectMapper.readValue(rs.getString("additional_fields"), AdditionalFields.class);
+                additionalFields = objectMapper.readValue(rs.getString("additional_details"), AdditionalFields.class);
             } catch (JsonProcessingException e) {
                 throw new SQLException(e);
             }

@@ -89,6 +89,7 @@ public class IcopsEnrichment {
                     .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
                     .processOrigin(config.getProcessOrigin())
                     .processInvAgency(config.getProcessInvAgency())
+                     .processCourtCode("KLTR13")
                     .build();
         }
         else{
@@ -120,6 +121,7 @@ public class IcopsEnrichment {
                     .processOrigin(config.getProcessOrigin())
                     .processInvAgency(config.getProcessInvAgency())
                     .processRespondantType("A")
+                     .processCourtCode("KLTR13")
                     .build();
         }
 
