@@ -16,7 +16,7 @@ public class IcopsTracker {
     private Object taskDetails;
     private DeliveryStatus deliveryStatus;
     private String remarks;
-    private Object additionalDetails;
+    private AdditionalFields additionalDetails;
     private Integer rowVersion;
     private String bookingDate;
     private String receivedDate;

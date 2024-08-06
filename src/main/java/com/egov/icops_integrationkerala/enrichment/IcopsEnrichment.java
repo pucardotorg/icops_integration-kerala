@@ -82,31 +82,9 @@ public class IcopsEnrichment {
                 .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
                 .processOrigin(config.getProcessOrigin())
                 .processInvAgency(config.getProcessInvAgency())
+                .processRespondantType("A")
                 .build();
-        enrichPoliceStationDetails(processRequest);
         return processRequest;
-    }
-
-
-    private void enrichPoliceStationDetails(ProcessRequest processRequest) {
-        log.info("Enriching Process Request Data for Case No: {}", processRequest.getProcessCaseno());
-
-        processRequest.setProcessPoliceStationCode("15290042");
-        processRequest.setProcessPoliceStationName("PUDUKKADU");
-        processRequest.setCaseListedDate(converter.convertDate("2024-04-01"));
-
-
-        processRequest.setProcessCourtCode("KLTR13");
-//        processRequest.setProcessFirYear("2019");
-//        processRequest.setProcessFirPScode("15290042");
-//        processRequest.setProcessFirSrlno("1268");
-        processRequest.setProcessPartyNumber("10");
-        processRequest.setProcessReceiverTaluka("Mukundapuram");
-        processRequest.setProcessRespondantType("W");
-
-        //processRequest.setCourtBenchCd("1");
-        //processRequest.setCourtBenchName("Principal Sub Judge");
-//        processRequest.setProcessReceiverType("W");
     }
 
     public IcopsTracker createPostTrackerBody(TaskRequest request, ProcessRequest processRequest, ChannelMessage channelMessage, DeliveryStatus status) {
@@ -121,7 +99,6 @@ public class IcopsEnrichment {
                 .taskDetails(request.getTask().getTaskDetails())
                 .deliveryStatus(status)
                 .remarks(channelMessage.getFailureMsg())
-                .additionalDetails(request.getTask().getAdditionalDetails())
                 .rowVersion(0)
                 .bookingDate(currentDate)
                 .acknowledgementId(channelMessage.getAcknowledgeUniqueNumber())
