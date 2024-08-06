@@ -56,11 +56,11 @@ public class IcopsEnrichment {
         String processUniqueId = idgenUtil.getIdList(taskRequest.getRequestInfo(), config.getEgovStateTenantId(),
                 config.getIdName(),null,1).get(0);
         ProcessRequest processRequest;
-        if(Objects.equals(task.getTaskType(), "warrant")){
+        if(!task.getTaskType().isEmpty() && task.getTaskType().equalsIgnoreCase("warrant")){
             PartyData partyData = PartyData.builder()
                     .spartyAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
                     .spartyName(taskDetails.getRespondentDetails().getName())
-                    .spartyType("W")
+                    .spartyType("A")
                     .spartyEmail(taskDetails.getRespondentDetails().getEmail())
                     .spartyState(taskDetails.getRespondentDetails().getState())
                     .spartyGender(taskDetails.getRespondentDetails().getGender())
@@ -68,7 +68,8 @@ public class IcopsEnrichment {
                     .spartyAddress(taskDetails.getRespondentDetails().getAddress())
                     .spartyDistrict(taskDetails.getRespondentDetails().getDistrict())
                     .spartyRelationName(taskDetails.getRespondentDetails().getRelativeName())
-                    .spartyRelationType(taskDetails.getRespondentDetails().getRelationWithRelative()).build();
+                    .spartyRelationType(taskDetails.getRespondentDetails().getRelationWithRelative())
+                    .build();
              processRequest = ProcessRequest.builder()
                     .partyData(partyData)
                     .processCaseno(taskDetails.getCaseDetails().getCaseId())
