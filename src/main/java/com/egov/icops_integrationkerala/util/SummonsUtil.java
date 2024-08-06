@@ -2,6 +2,8 @@ package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.RequestInfo;
@@ -31,14 +33,22 @@ public class SummonsUtil {
         this.objectMapper = objectMapper;
     }
 
-    public ChannelMessage updateSummonsDeliveryStatus(IcopsRequest request) {
+    public ChannelMessage updateSummonsDeliveryStatus(IcopsRequest request) throws JsonProcessingException {
         String summonsUrl = config.getSummonsHost() + config.getSummonsUpdateEndPoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        AdditionalFields additionalFields;
+        if (request.getIcopsTracker().getAdditionalDetails() instanceof AdditionalFields) {
+            additionalFields = (AdditionalFields) request.getIcopsTracker().getAdditionalDetails();
+        } else {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.valueToTree(request.getIcopsTracker().getAdditionalDetails());
+            additionalFields = objectMapper.treeToValue(jsonNode, AdditionalFields.class);
+        }
         ChannelReport channelReport = ChannelReport.builder()
                 .summonId(request.getIcopsTracker().getProcessNumber())
                 .deliveryStatus(request.getIcopsTracker().getDeliveryStatus().toString())
-                .additionalFields((AdditionalFields) request.getIcopsTracker().getAdditionalDetails()).build();
+                .additionalFields(additionalFields).build();
         UpdateSummonsRequest summonsRequest = UpdateSummonsRequest.builder().requestInfo(request.getRequestInfo()).channelReport(channelReport).build();
         HttpEntity<UpdateSummonsRequest> requestEntity = new HttpEntity<>(summonsRequest, headers);
         try {
