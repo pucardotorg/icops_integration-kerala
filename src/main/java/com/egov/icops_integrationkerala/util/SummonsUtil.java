@@ -2,6 +2,8 @@ package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.RequestInfo;
@@ -13,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -31,14 +35,24 @@ public class SummonsUtil {
         this.objectMapper = objectMapper;
     }
 
-    public ChannelMessage updateSummonsDeliveryStatus(IcopsRequest request) {
+    public ChannelMessage updateSummonsDeliveryStatus(IcopsRequest request) throws JsonProcessingException {
         String summonsUrl = config.getSummonsHost() + config.getSummonsUpdateEndPoint();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        AdditionalFields additionalFields;
+        if (request.getIcopsTracker().getAdditionalDetails() instanceof Map) {
+            additionalFields = objectMapper.convertValue(
+                    request.getIcopsTracker().getAdditionalDetails(),
+                    AdditionalFields.class
+            );
+        } else {
+            String additionalDetailsJson = objectMapper.writeValueAsString(request.getIcopsTracker().getAdditionalDetails());
+            additionalFields = objectMapper.readValue(additionalDetailsJson, AdditionalFields.class);
+        }
         ChannelReport channelReport = ChannelReport.builder()
                 .summonId(request.getIcopsTracker().getProcessNumber())
                 .deliveryStatus(request.getIcopsTracker().getDeliveryStatus().toString())
-                .additionalFields((AdditionalFields) request.getIcopsTracker().getAdditionalDetails()).build();
+                .additionalFields(additionalFields).build();
         UpdateSummonsRequest summonsRequest = UpdateSummonsRequest.builder().requestInfo(request.getRequestInfo()).channelReport(channelReport).build();
         HttpEntity<UpdateSummonsRequest> requestEntity = new HttpEntity<>(summonsRequest, headers);
         try {
