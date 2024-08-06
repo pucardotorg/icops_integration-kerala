@@ -29,7 +29,7 @@ public class IcopsRepository {
     public List<IcopsTracker> getIcopsTracker(String processUniqueId){
         List<Object> preparedStmtList = new ArrayList<>();
         String query = queryBuilder.getIcopsTracker(processUniqueId, preparedStmtList);
-        log.debug("Final query: " + query);
+        log.info("Final query: " + query);
         return jdbcTemplate.query(query, preparedStmtList.toArray(), rowMapper);
     }
 }
