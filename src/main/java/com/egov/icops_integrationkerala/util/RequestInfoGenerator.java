@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.RequestInfo;
+import org.egov.common.contract.request.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -85,11 +86,12 @@ public class RequestInfoGenerator {
 
             String accessToken = jsonResponse.get("access_token").asText();
             JsonNode userInfo = jsonResponse.get("UserRequest");
+            User user = objectMapper.treeToValue(userInfo, User.class);
 
             Map<String, Object> requestInfo = new HashMap<>();
             requestInfo.put("apiId", "Rainmaker");
             requestInfo.put("authToken", accessToken);
-            requestInfo.put("userInfo", userInfo);
+            requestInfo.put("userInfo", user);
 
             return mapper.convertValue(requestInfo, RequestInfo.class);
 
