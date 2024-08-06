@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @Component
 @Slf4j
 public class SummonsUtil {
@@ -38,12 +40,14 @@ public class SummonsUtil {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         AdditionalFields additionalFields;
-        if (request.getIcopsTracker().getAdditionalDetails() instanceof AdditionalFields) {
-            additionalFields = (AdditionalFields) request.getIcopsTracker().getAdditionalDetails();
+        if (request.getIcopsTracker().getAdditionalDetails() instanceof Map) {
+            additionalFields = objectMapper.convertValue(
+                    request.getIcopsTracker().getAdditionalDetails(),
+                    AdditionalFields.class
+            );
         } else {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.valueToTree(request.getIcopsTracker().getAdditionalDetails());
-            additionalFields = objectMapper.treeToValue(jsonNode, AdditionalFields.class);
+            String additionalDetailsJson = objectMapper.writeValueAsString(request.getIcopsTracker().getAdditionalDetails());
+            additionalFields = objectMapper.readValue(additionalDetailsJson, AdditionalFields.class);
         }
         ChannelReport channelReport = ChannelReport.builder()
                 .summonId(request.getIcopsTracker().getProcessNumber())
