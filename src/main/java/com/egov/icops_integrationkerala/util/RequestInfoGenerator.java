@@ -78,7 +78,7 @@ public class RequestInfoGenerator {
             );
 
             String responseBody = responseEntity.getBody();
-            System.out.println("Response data: " + responseBody);
+            log.info("Response data: {}", responseBody);
 
             // Parse response
             ObjectMapper mapper = new ObjectMapper();

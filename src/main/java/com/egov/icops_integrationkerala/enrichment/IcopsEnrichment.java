@@ -6,9 +6,7 @@ import com.egov.icops_integrationkerala.repository.IcopsRepository;
 import com.egov.icops_integrationkerala.util.*;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
-import org.egov.common.contract.models.AuditDetails;
 import org.egov.common.contract.request.RequestInfo;
-import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +14,8 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static com.egov.icops_integrationkerala.config.ServiceConstants.*;
 
 @Component
 @Slf4j
@@ -81,8 +81,8 @@ public class IcopsEnrichment {
                     .processNextHearingDate(converter.convertDate(taskDetails.getCaseDetails().getHearingDate()))
                     .processPartyType(taskDetails.getSummonDetails().getPartyType())
                     .processDocType(docTypeInfo != null ? docTypeInfo.get("name") : null)
-                    .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get("docTypeCode") : null)
-                    .processDocSubType(docTypeInfo != null ? docTypeInfo.get("subType") : null)
+                    .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get(DOC_TYPE_CODE) : null)
+                    .processDocSubType(docTypeInfo != null ? docTypeInfo.get(SUB_TYPE) : null)
                     .processDocSubTypeCode(docTypeInfo != null ? docTypeInfo.get("code") : null)
                     .processCino(task.getCnrNumber())
                     .cnrNo(task.getCnrNumber())
@@ -112,8 +112,8 @@ public class IcopsEnrichment {
                     .processReceiverPincode(taskDetails.getRespondentDetails().getPinCode())
                     .processPartyType(taskDetails.getSummonDetails().getPartyType())
                     .processDocType(docTypeInfo != null ? docTypeInfo.get("name") : null)
-                    .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get("docTypeCode") : null)
-                    .processDocSubType(docTypeInfo != null ? docTypeInfo.get("subType") : null)
+                    .processDocTypeCode(docTypeInfo != null ? docTypeInfo.get(DOC_TYPE_CODE) : null)
+                    .processDocSubType(docTypeInfo != null ? docTypeInfo.get(SUB_TYPE) : null)
                     .processDocSubTypeCode(docTypeInfo != null ? docTypeInfo.get("code") : null)
                     .processCino(task.getCnrNumber())
                     .cnrNo(task.getCnrNumber())
@@ -255,43 +255,32 @@ public class IcopsEnrichment {
     private List<String> createMasterDetails() {
         List<String> masterList = new ArrayList<>();
         masterList.add("docType");
-        masterList.add("docSubType");
+        masterList.add(DOC_SUB_TYPE);
         masterList.add("actionStatus");
         return masterList;
     }
     public Map<String, String> getDocTypeCode(Map<String, Map<String, JSONArray>> mdmsData, String masterString) {
 
-        if (mdmsData != null && mdmsData.containsKey(config.getIcopsBusinessServiceName()) && mdmsData.get(config.getIcopsBusinessServiceName()).containsKey("docSubType")) {
-            JSONArray docSubType = mdmsData.get(config.getIcopsBusinessServiceName()).get("docSubType");
+        if (mdmsData != null && mdmsData.containsKey(config.getIcopsBusinessServiceName()) && mdmsData.get(config.getIcopsBusinessServiceName()).containsKey(DOC_SUB_TYPE)) {
+            JSONArray docSubType = mdmsData.get(config.getIcopsBusinessServiceName()).get(DOC_SUB_TYPE);
             JSONArray docsType = mdmsData.get(config.getIcopsBusinessServiceName()).get("docType");
             Map<String, String> result = new HashMap<>();
             for (Object docSubTypeObj : docSubType) {
                 Map<String, String> subType = (Map<String, String>) docSubTypeObj;
                 if (masterString.equals(subType.get("name"))) {
                     result.put("code", subType.get("code"));
-                    result.put("docTypeCode", subType.get("docTypeCode"));
-                    result.put("subType",subType.get("subType"));
+                    result.put(DOC_TYPE_CODE, subType.get(DOC_TYPE_CODE));
+                    result.put(SUB_TYPE,subType.get(SUB_TYPE));
                 }
             }
             for (Object docTypeObj : docsType) {
                 Map<String, String> docType = (Map<String, String>) docTypeObj;
-                if (result.get("docTypeCode") != null && result.get("docTypeCode").equals(docType.get("code"))) {
+                if (result.get(DOC_TYPE_CODE) != null && result.get(DOC_TYPE_CODE).equals(docType.get("code"))) {
                     result.put("name", docType.get("type"));
                     return result;
                 }
             }
         }
-        return null;
-    }
-
-    private AuditDetails createAuditDetails(RequestInfo requestInfo) {
-        long currentTime = System.currentTimeMillis();
-        String userId = requestInfo.getUserInfo().getUuid();
-        return AuditDetails.builder()
-                .createdBy(userId)
-                .createdTime(currentTime)
-                .lastModifiedBy(userId)
-                .lastModifiedTime(currentTime)
-                .build();
+        return Collections.emptyMap();
     }
 }

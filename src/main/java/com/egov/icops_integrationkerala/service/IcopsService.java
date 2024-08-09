@@ -28,8 +28,6 @@ public class IcopsService {
 
     private final ProcessRequestUtil processRequestUtil;
 
-    private final SummonsUtil summonsUtil;
-
     private final RequestInfoGenerator requestInfoGenerator;
 
     private final PoliceJurisdictionUtil policeJurisdictionUtil;
@@ -40,14 +38,13 @@ public class IcopsService {
 
     @Autowired
     public IcopsService(AuthUtil authUtil, AuthenticationManager authenticationManager,
-                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, SummonsUtil summonsUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil, Producer producer) {
+                        JwtUtil jwtUtil, IcopsEnrichment icopsEnrichment, ProcessRequestUtil processRequestUtil, RequestInfoGenerator requestInfoGenerator, PoliceJurisdictionUtil policeJurisdictionUtil, Producer producer) {
 
         this.authUtil = authUtil;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.icopsEnrichment = icopsEnrichment;
         this.processRequestUtil = processRequestUtil;
-        this.summonsUtil = summonsUtil;
         this.requestInfoGenerator = requestInfoGenerator;
         this.policeJurisdictionUtil = policeJurisdictionUtil;
         this.producer = producer;
@@ -88,7 +85,7 @@ public class IcopsService {
 
     public AuthResponse generateAuthToken(String serviceName, String serviceKey, String authType) throws Exception {
         try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(serviceName, serviceKey));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(serviceName, serviceKey));
             return jwtUtil.generateToken(serviceName);
         } catch (AuthenticationException e) {
             throw new Exception("Invalid Service Credentials");

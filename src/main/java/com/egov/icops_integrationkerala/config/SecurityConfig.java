@@ -17,8 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    private final CustomAuthenticationProvider authenticationProvider;
-
     private final JwtUtil jwtUtil;
 
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -26,8 +24,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
-    public SecurityConfig(CustomAuthenticationProvider authenticationProvider, JwtUtil jwtUtil, CustomAccessDeniedHandler accessDeniedHandler, CustomAuthenticationEntryPoint authenticationEntryPoint) {
-        this.authenticationProvider = authenticationProvider;
+    public SecurityConfig(JwtUtil jwtUtil, CustomAccessDeniedHandler accessDeniedHandler, CustomAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtUtil = jwtUtil;
         this.accessDeniedHandler = accessDeniedHandler;
         this.authenticationEntryPoint = authenticationEntryPoint;

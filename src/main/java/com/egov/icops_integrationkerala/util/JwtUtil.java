@@ -14,16 +14,12 @@ public class JwtUtil {
 
     private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    private final String TOKEN_HEADER = "Authorization";
-
-    private final String TOKEN_PREFIX = "Bearer ";
-
-    private long tokenExpirationTime = 30*60*1000;
+    private long tokenExpirationTime = 30*60*1000L;
 
     private final JwtParser jwtParser;
 
     public JwtUtil(){
-        this.jwtParser = Jwts.parser().setSigningKey(secretKey);
+        this.jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
     }
 
     public AuthResponse generateToken(String serviceName) {
@@ -41,13 +37,13 @@ public class JwtUtil {
     }
 
     public String getServiceNameFromToken(String token) {
-        Claims claims = jwtParser.setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        Claims claims = jwtParser.parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
-            jwtParser.setSigningKey(secretKey).parseClaimsJws(token);
+            jwtParser.parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;

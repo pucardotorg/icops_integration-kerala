@@ -9,7 +9,7 @@ import java.util.List;
 @Slf4j
 public class IcopsQueryBuilder {
 
-    private final String BASE_APPLICATION_QUERY = "SELECT process_number, tenant_id, task_number, task_type, file_store_id, task_details, delivery_status, remarks, additional_details, booking_date, received_date, row_version, acknowledgement_id ";
+    private static final String BASE_APPLICATION_QUERY = "SELECT process_number, tenant_id, task_number, task_type, file_store_id, task_details, delivery_status, remarks, additional_details, booking_date, received_date, row_version, acknowledgement_id ";
 
     private static final String FROM_TABLES = " FROM dristi_kerala_icops ";
 
