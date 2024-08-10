@@ -4,7 +4,6 @@ import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.AuthResponse;
 import com.egov.icops_integrationkerala.model.ChannelMessage;
 import com.egov.icops_integrationkerala.model.ProcessRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

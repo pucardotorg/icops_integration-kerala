@@ -7,10 +7,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-public class DateStringConverterTest {
+class DateStringConverterTest {
 
     @Test
-    public void testConvertDate() {
+    void testConvertDate() {
         DateStringConverter dateStringConverter = new DateStringConverter();
         String originalDate = "2021-01-01";
         String convertedDate = dateStringConverter.convertDate(originalDate);

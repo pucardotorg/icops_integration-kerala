@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class IcopsRepositoryTest {
+class IcopsRepositoryTest {
 
     @InjectMocks
     private IcopsRepository icopsRepository;
@@ -30,7 +30,7 @@ public class IcopsRepositoryTest {
     private IcopsQueryBuilder queryBuilder;
 
     @Test
-    public void testGetIcopsTracker() {
+    void testGetIcopsTracker() {
         // Arrange
         String processUniqueId = "processUniqueId";
 

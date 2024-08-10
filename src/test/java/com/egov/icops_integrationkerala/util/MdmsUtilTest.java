@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-public class MdmsUtilTest {
+class MdmsUtilTest {
 
     @InjectMocks
     private MdmsUtil mdmsUtil;
@@ -39,7 +39,7 @@ public class MdmsUtilTest {
     }
 
     @Test
-    public void testFetchMdmsData_Success() {
+    void testFetchMdmsData_Success() {
         RequestInfo requestInfo = new RequestInfo();
         String tenantId = "tenantId";
         String moduleName = "moduleName";
@@ -70,7 +70,7 @@ public class MdmsUtilTest {
     }
 
     @Test
-    public void testFetchMdmsData_Exception() {
+    void testFetchMdmsData_Exception() {
         RequestInfo requestInfo = new RequestInfo();
         String tenantId = "tenantId";
         String moduleName = "moduleName";

@@ -20,7 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class IcopsServiceTest {
+class IcopsServiceTest {
 
     @Mock
     private AuthUtil authUtil;

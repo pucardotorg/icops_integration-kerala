@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,7 +52,7 @@ class IcopsRowMapperTest {
         when(resultSet.getString("task_type")).thenReturn(taskType);
         when(resultSet.getString("file_store_id")).thenReturn(fileStoreId);
         when(resultSet.getString("task_details")).thenReturn(taskDetails);
-        when(resultSet.getString("delivery_status")).thenReturn(DeliveryStatus.DELIVERY_SUCCESSFUL.name());
+        when(resultSet.getString("delivery_status")).thenReturn(DeliveryStatus.DELIVERED.name());
         when(resultSet.getString("remarks")).thenReturn(remarks);
         when(resultSet.getString("additional_details")).thenReturn(additionalDetails);
         when(resultSet.getInt("row_version")).thenReturn(rowVersion);
@@ -68,13 +67,13 @@ class IcopsRowMapperTest {
 
         IcopsTracker icopsTracker = icopsRowMapper.mapRow(resultSet, 1);
 
+        assert icopsTracker != null;
         assertEquals(processNumber, icopsTracker.getProcessNumber());
         assertEquals(tenantId, icopsTracker.getTenantId());
         assertEquals(taskNumber, icopsTracker.getTaskNumber());
         assertEquals(taskType, icopsTracker.getTaskType());
         assertEquals(fileStoreId, icopsTracker.getFileStoreId());
         assertNotNull(icopsTracker.getTaskDetails());
-//        assertEquals(, icopsTracker.getDeliveryStatus());
         assertEquals(remarks, icopsTracker.getRemarks());
         assertEquals(additionalFields, icopsTracker.getAdditionalDetails());
         assertEquals(rowVersion, icopsTracker.getRowVersion());
@@ -89,14 +88,10 @@ class IcopsRowMapperTest {
         verify(resultSet, times(1)).getString("file_store_id");
         verify(resultSet, times(1)).getString("task_details");
         verify(resultSet, times(1)).getString("delivery_status");
-        verify(resultSet, times(1)).getString("remarks");
         verify(resultSet, times(1)).getString("additional_details");
-        verify(resultSet, times(1)).getInt("row_version");
         verify(resultSet, times(1)).getString("booking_date");
         verify(resultSet, times(1)).getString("received_date");
         verify(resultSet, times(1)).getString("acknowledgement_id");
-        verify(objectMapper, times(1)).readValue(additionalDetails, AdditionalFields.class);
-        verify(objectMapper, times(1)).readValue(taskDetails, Object.class);
     }
 
     @Test

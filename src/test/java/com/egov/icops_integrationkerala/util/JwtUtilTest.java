@@ -9,13 +9,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class JwtUtilTest {
+class JwtUtilTest {
 
     @InjectMocks
     private JwtUtil jwtUtil;
 
     @Test
-    public void testGenerateToken() {
+    void testGenerateToken() {
         // Arrange
         String serviceName = "serviceName";
 
@@ -27,7 +27,7 @@ public class JwtUtilTest {
     }
 
     @Test
-    public void generateToken_ValidServiceName_ReturnsAuthResponse() {
+    void generateToken_ValidServiceName_ReturnsAuthResponse() {
         String serviceName = "validService";
         AuthResponse result = jwtUtil.generateToken(serviceName);
         assertNotNull(result);
@@ -36,7 +36,7 @@ public class JwtUtilTest {
     }
 
     @Test
-    public void getServiceNameFromToken_ValidToken_ReturnsServiceName() {
+    void getServiceNameFromToken_ValidToken_ReturnsServiceName() {
         String serviceName = "validService";
         AuthResponse authResponse = jwtUtil.generateToken(serviceName);
         String token = authResponse.getAccessToken();
@@ -45,7 +45,7 @@ public class JwtUtilTest {
     }
 
     @Test
-    public void validateToken_ValidToken_ReturnsTrue() {
+    void validateToken_ValidToken_ReturnsTrue() {
         String serviceName = "validService";
         AuthResponse authResponse = jwtUtil.generateToken(serviceName);
         String token = authResponse.getAccessToken();
@@ -54,7 +54,7 @@ public class JwtUtilTest {
     }
 
     @Test
-    public void validateToken_InvalidToken_ReturnsFalse() {
+    void validateToken_InvalidToken_ReturnsFalse() {
         String invalidToken = "invalidToken";
         boolean isValid = jwtUtil.validateToken(invalidToken);
         assertFalse(isValid);
