@@ -41,8 +41,9 @@ public class SummonsUtil {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         ChannelReport channelReport = ChannelReport.builder()
-                .summonId(request.getIcopsTracker().getProcessNumber())
-                .deliveryStatus(request.getIcopsTracker().getDeliveryStatus().toString())
+                .processNumber(request.getIcopsTracker().getProcessNumber())
+                .taskNumber(request.getIcopsTracker().getTaskNumber())
+                .deliveryStatus(request.getIcopsTracker().getDeliveryStatus())
                 .additionalFields(request.getIcopsTracker().getAdditionalDetails()).build();
         UpdateSummonsRequest summonsRequest = UpdateSummonsRequest.builder().requestInfo(request.getRequestInfo()).channelReport(channelReport).build();
         HttpEntity<UpdateSummonsRequest> requestEntity = new HttpEntity<>(summonsRequest, headers);

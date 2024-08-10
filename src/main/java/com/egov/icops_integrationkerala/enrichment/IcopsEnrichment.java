@@ -60,7 +60,7 @@ public class IcopsEnrichment {
             PartyData partyData = PartyData.builder()
                     .spartyAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
                     .spartyName(taskDetails.getRespondentDetails().getName())
-                    .spartyType("A")
+                    .spartyType("A")  // currently supported only for accused, so hardcoded it.
                     .spartyEmail(taskDetails.getRespondentDetails().getEmail())
                     .spartyState(taskDetails.getRespondentDetails().getState())
                     .spartyGender(taskDetails.getRespondentDetails().getGender())
@@ -89,7 +89,7 @@ public class IcopsEnrichment {
                     .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
                     .processOrigin(config.getProcessOrigin())
                     .processInvAgency(config.getProcessInvAgency())
-                     .processCourtCode(taskDetails.getCaseDetails().getCourtName())
+                    .processCourtCode(taskDetails.getCaseDetails().getCourtCode())
                     .build();
         }
         else{
@@ -120,8 +120,8 @@ public class IcopsEnrichment {
                     .orderSignedDate(converter.convertDate(task.getCreatedDate().toString()))
                     .processOrigin(config.getProcessOrigin())
                     .processInvAgency(config.getProcessInvAgency())
-                    .processRespondantType("A")
-                     .processCourtCode(taskDetails.getCaseDetails().getCourtName())
+                    .processRespondantType("A") // currently supported only for accused, so hardcoded it.
+                    .processCourtCode(taskDetails.getCaseDetails().getCourtCode())
                     .build();
         }
 
