@@ -12,13 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @ExtendWith(MockitoExtension.class)
-public class IcopsQueryBuilderTest {
+class IcopsQueryBuilderTest {
 
     @InjectMocks
     private IcopsQueryBuilder icopsQueryBuilder;
 
     @Test
-    public void testGetIcopsTracker() {
+    void testGetIcopsTracker() {
         String processUniqueId = "processUniqueId";
         List<Object> preparedStmtList = new ArrayList<>();
         String result = icopsQueryBuilder.getIcopsTracker(processUniqueId, preparedStmtList);
@@ -26,14 +26,14 @@ public class IcopsQueryBuilderTest {
     }
 
     @Test
-    public void testGetIcopsTracker_1() {
+    void testGetIcopsTracker_1() {
         List<Object> preparedStmtList = new ArrayList<>();
         String result = icopsQueryBuilder.getIcopsTracker(null, preparedStmtList);
         assertNotNull(result);
     }
 
     @Test
-    public void testGetIcopsTracker_2() {
+    void testGetIcopsTracker_2() {
         String processUniqueId = "processUniqueId";
         List<Object> preparedStmtList = new ArrayList<>();
         preparedStmtList.add("processUniqueId");

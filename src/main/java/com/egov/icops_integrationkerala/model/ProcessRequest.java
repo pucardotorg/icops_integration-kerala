@@ -40,12 +40,6 @@ public class ProcessRequest {
     @JsonProperty("orderSignedDate")
     private String orderSignedDate;
 
-    //@JsonProperty("courtBenchCd")
-    //private String courtBenchCd;
-
-    //@JsonProperty("courtBenchName")
-    //private String courtBenchName;
-
     @JsonProperty("processPoliceStationCode")
     private String processPoliceStationCode;
 

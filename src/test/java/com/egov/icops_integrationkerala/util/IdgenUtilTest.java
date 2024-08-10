@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class IdgenUtilTest {
+class IdgenUtilTest {
 
     @Mock
     private ObjectMapper mapper;
@@ -46,7 +46,7 @@ public class IdgenUtilTest {
     }
 
     @Test
-    public void testGetIdList_Success() {
+    void testGetIdList_Success() {
         // Arrange
         RequestInfo requestInfo = new RequestInfo();
         String tenantId = "tenantId";
@@ -75,7 +75,7 @@ public class IdgenUtilTest {
     }
 
     @Test
-    public void testGetIdList_NoIdsFound() {
+    void testGetIdList_NoIdsFound() {
         // Arrange
         RequestInfo requestInfo = new RequestInfo();
         String tenantId = "tenantId";
@@ -92,13 +92,13 @@ public class IdgenUtilTest {
         doReturn(idGenerationResponse).when(mapper).convertValue(any(), any(Class.class));
 
         // Act & Assert
-        CustomException exception = assertThrows(CustomException.class, () -> {
+        assertThrows(CustomException.class, () -> {
             idgenUtil.getIdList(requestInfo, tenantId, idName, idformat, count);
         });
     }
 
     @Test
-    public void testGetIdList_Exception() {
+    void testGetIdList_Exception() {
         // Arrange
         RequestInfo requestInfo = new RequestInfo();
         String tenantId = "tenantId";

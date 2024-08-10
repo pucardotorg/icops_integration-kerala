@@ -78,7 +78,6 @@ class PoliceJurisdictionUtilTest {
 
         // Assert
         assertNotNull(result);
-//        assertEquals("Test Police Station", result.getPoliceStation());
         verify(objectMapper, times(1)).writeValueAsString(location);
     }
 

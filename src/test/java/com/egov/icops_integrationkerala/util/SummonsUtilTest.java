@@ -41,7 +41,7 @@ class SummonsUtilTest {
         IcopsRequest request = new IcopsRequest();
         IcopsTracker icopsTracker = new IcopsTracker();
         icopsTracker.setProcessNumber("12345");
-        icopsTracker.setDeliveryStatus(DeliveryStatus.DELIVERY_SUCCESSFUL);
+        icopsTracker.setDeliveryStatus(DeliveryStatus.DELIVERED);
         request.setIcopsTracker(icopsTracker);
         RequestInfo requestInfo = new RequestInfo();
         request.setRequestInfo(requestInfo);
@@ -72,7 +72,7 @@ class SummonsUtilTest {
         IcopsRequest request = new IcopsRequest();
         IcopsTracker icopsTracker = new IcopsTracker();
         icopsTracker.setProcessNumber("12345");
-        icopsTracker.setDeliveryStatus(DeliveryStatus.DELIVERY_SUCCESSFUL);
+        icopsTracker.setDeliveryStatus(DeliveryStatus.DELIVERED);
         request.setIcopsTracker(icopsTracker);
         RequestInfo requestInfo = new RequestInfo();
         request.setRequestInfo(requestInfo);

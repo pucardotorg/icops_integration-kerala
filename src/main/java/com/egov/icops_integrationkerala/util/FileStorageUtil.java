@@ -19,6 +19,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 
+import static com.egov.icops_integrationkerala.config.ServiceConstants.FILES;
+
 @Component
 @Slf4j
 public class FileStorageUtil {
@@ -77,9 +79,9 @@ public class FileStorageUtil {
                 requestEntity, Object.class);
         log.info("Response Body: {}", responseEntity.getBody());
         JsonNode rootNode = mapper.convertValue(responseEntity.getBody(), JsonNode.class);
-        if (rootNode.has("files") && rootNode.get("files").isArray()
-                && rootNode.get("files").get(0).isObject()) {
-            return rootNode.get("files").get(0).get("fileStoreId").asText();
+        if (rootNode.has(FILES) && rootNode.get(FILES).isArray()
+                && rootNode.get(FILES).get(0).isObject()) {
+            return rootNode.get(FILES).get(0).get("fileStoreId").asText();
         } else {
             log.error("Failed to get valid response from file store service");
             throw new CustomException("SUMMONS_FILE_STORE_ERROR", "Failed to get valid file store id from file store service");

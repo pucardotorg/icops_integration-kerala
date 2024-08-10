@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class Producer {
 
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
     @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    public Producer(KafkaTemplate<String, Object> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void push(String topic, Object value) {
         kafkaTemplate.send(topic, value);

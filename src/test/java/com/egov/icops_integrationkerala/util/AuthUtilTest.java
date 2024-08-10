@@ -2,6 +2,7 @@ package com.egov.icops_integrationkerala.util;
 
 import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.AuthResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -83,17 +84,5 @@ class AuthUtilTest {
         // Act & Assert
         Exception exception = assertThrows(Exception.class, () -> authUtil.authenticateAndGetToken());
         assertEquals("Error occurred when authenticating ICops", exception.getMessage());
-    }
-
-    @Test
-    void authenticateAndGetToken_NullResponse() {
-        // Arrange
-        when(config.getIcopsUrl()).thenReturn("http://icops.com");
-        when(config.getAuthEndpoint()).thenReturn("/auth");
-        when(restTemplate.postForEntity(
-                anyString(),
-                any(HttpEntity.class),
-                eq(AuthResponse.class)
-        )).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
     }
 }

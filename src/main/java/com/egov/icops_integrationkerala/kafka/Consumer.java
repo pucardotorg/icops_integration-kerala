@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -31,13 +31,13 @@ public class Consumer {
 
     @KafkaListener(topics = "update-icops-tracker")
     @Async
-    public void listenForGenerateSummonsDocument(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+    public void listenForGenerateSummonsDocument(final Map<String, Object> recordMap, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         try {
-            IcopsRequest icopsRequest = objectMapper.convertValue(record, IcopsRequest.class);
+            IcopsRequest icopsRequest = objectMapper.convertValue(recordMap, IcopsRequest.class);
             log.info("received paylod",icopsRequest);
             summonsUtil.updateSummonsDeliveryStatus(icopsRequest);
         } catch (final Exception e) {
-            log.error("Error while listening to value: {}: ", record, e);
+            log.error("Error while listening to value: {}: ", recordMap, e);
         }
     }
 }

@@ -6,13 +6,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ProcessReportExceptionTest {
+class ProcessReportExceptionTest {
 
     @Mock
     private ProcessReportException processReportException;
 
     @Test
-    public void testProcessReportException() {
+    void testProcessReportException() {
         processReportException = new ProcessReportException("message");
+        assert processReportException.getMessage().equals("message");
     }
 }

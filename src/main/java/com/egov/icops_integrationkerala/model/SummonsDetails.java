@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 
-import java.time.LocalDate;
-
 /**
  * Summon
  */

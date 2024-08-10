@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import org.egov.common.contract.models.Address;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
