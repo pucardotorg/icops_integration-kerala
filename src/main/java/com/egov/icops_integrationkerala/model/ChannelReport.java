@@ -10,12 +10,18 @@ import lombok.*;
 @Builder
 public class ChannelReport {
 
-    @JsonProperty("summonId")
-    private String summonId;
+    @JsonProperty("taskNumber")
+    private String taskNumber;
+
+    @JsonProperty("processNumber")
+    private String processNumber;
 
     @JsonProperty("deliveryStatus")
-    private String deliveryStatus;
+    private DeliveryStatus deliveryStatus;
 
     @JsonProperty("additionalFields")
     private AdditionalFields additionalFields;
+
+    @JsonProperty("remarks")
+    private String remarks;
 }

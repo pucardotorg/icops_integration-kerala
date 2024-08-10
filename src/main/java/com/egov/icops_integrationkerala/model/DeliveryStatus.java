@@ -3,13 +3,17 @@ package com.egov.icops_integrationkerala.model;
 public enum DeliveryStatus {
 
 
-    DELIVERY_SUCCESSFUL,
+    DELIVERED,
 
-    DELIVERY_FAILED,
+    NOT_DELIVERED,
 
-    PENDING,
+    IN_TRANSIT,
 
     FAILED,
 
-    STATUS_UNKNOWN
+    STATUS_UNKNOWN,
+
+    EXECUTED,
+
+    NOT_EXECUTED
 }
