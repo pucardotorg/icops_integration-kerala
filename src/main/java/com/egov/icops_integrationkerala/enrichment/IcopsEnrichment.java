@@ -61,7 +61,10 @@ public class IcopsEnrichment {
         ProcessRequest processRequest;
         String address = objectMapper.writeValueAsString(taskDetails.getRespondentDetails().getAddress());
         if(!task.getTaskType().isEmpty() && task.getTaskType().equalsIgnoreCase("warrant")){
-            Map<String, String> docTypeInfo = getDocTypeCode(mdmsData,"Warrant of arrest");
+            String docSubType = Optional.ofNullable(taskDetails.getWarrantDetails().getDocSubType())
+                    .orElse("Warrant of arrest");
+
+            Map<String, String> docTypeInfo = getDocTypeCode(mdmsData, docSubType);
             PartyData partyData = PartyData.builder()
                     .spartyAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
                     .spartyName(taskDetails.getRespondentDetails().getName())
