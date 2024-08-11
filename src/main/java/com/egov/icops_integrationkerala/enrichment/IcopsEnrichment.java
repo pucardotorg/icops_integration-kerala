@@ -55,13 +55,13 @@ public class IcopsEnrichment {
         String fileStoreId = task.getDocuments().get(0).getFileStore();
         Map<String, Map<String, JSONArray>> mdmsData = util.fetchMdmsData(requestInfo, config.getEgovStateTenantId(),
                 config.getIcopsBusinessServiceName(), createMasterDetails());
-        Map<String, String> docTypeInfo = getDocTypeCode(mdmsData,taskDetails.getSummonDetails().getDocSubType());
         String docFileString = fileStorageUtil.getFileFromFileStoreService(fileStoreId, config.getEgovStateTenantId());
         String processUniqueId = idgenUtil.getIdList(taskRequest.getRequestInfo(), config.getEgovStateTenantId(),
                 config.getIdName(),null,1).get(0);
         ProcessRequest processRequest;
         String address = objectMapper.writeValueAsString(taskDetails.getRespondentDetails().getAddress());
         if(!task.getTaskType().isEmpty() && task.getTaskType().equalsIgnoreCase("warrant")){
+            Map<String, String> docTypeInfo = getDocTypeCode(mdmsData,"Warrant of arrest");
             PartyData partyData = PartyData.builder()
                     .spartyAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
                     .spartyName(taskDetails.getRespondentDetails().getName())
@@ -98,6 +98,10 @@ public class IcopsEnrichment {
                     .build();
         }
         else{
+            String docSubType = Optional.ofNullable(taskDetails.getSummonDetails().getDocSubType())
+                    .orElse("Summons to an accused person");
+
+            Map<String, String> docTypeInfo = getDocTypeCode(mdmsData, docSubType);
              processRequest = ProcessRequest.builder()
                     .processCaseno(taskDetails.getCaseDetails().getCaseId())
                     .processDoc(docFileString)
