@@ -4,11 +4,12 @@ import com.egov.icops_integrationkerala.config.IcopsConfiguration;
 import com.egov.icops_integrationkerala.model.*;
 import com.egov.icops_integrationkerala.repository.IcopsRepository;
 import com.egov.icops_integrationkerala.util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import org.egov.common.contract.models.AuditDetails;
 import org.egov.common.contract.request.RequestInfo;
-import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,19 +33,22 @@ public class IcopsEnrichment {
 
     private final IcopsRepository repository;
 
+    private final ObjectMapper objectMapper;
+
 
     @Autowired
     public IcopsEnrichment(FileStorageUtil fileStorageUtil, IcopsConfiguration config,
-                           DateStringConverter converter, MdmsUtil util, IdgenUtil idgenUtil, IcopsRepository repository) {
+                           DateStringConverter converter, MdmsUtil util, IdgenUtil idgenUtil, IcopsRepository repository, ObjectMapper objectMapper) {
         this.fileStorageUtil = fileStorageUtil;
         this.config = config;
         this.converter = converter;
         this.util = util;
         this.idgenUtil = idgenUtil;
         this.repository = repository;
+        this.objectMapper = objectMapper;
     }
 
-    public ProcessRequest getProcessRequest(TaskRequest taskRequest) {
+    public ProcessRequest getProcessRequest(TaskRequest taskRequest) throws JsonProcessingException {
         Task task = taskRequest.getTask();
         RequestInfo requestInfo = taskRequest.getRequestInfo();
         TaskDetails taskDetails = task.getTaskDetails();
@@ -56,6 +60,7 @@ public class IcopsEnrichment {
         String processUniqueId = idgenUtil.getIdList(taskRequest.getRequestInfo(), config.getEgovStateTenantId(),
                 config.getIdName(),null,1).get(0);
         ProcessRequest processRequest;
+        String address = objectMapper.writeValueAsString(taskDetails.getRespondentDetails().getAddress());
         if(!task.getTaskType().isEmpty() && task.getTaskType().equalsIgnoreCase("warrant")){
             PartyData partyData = PartyData.builder()
                     .spartyAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
@@ -65,7 +70,7 @@ public class IcopsEnrichment {
                     .spartyState(taskDetails.getRespondentDetails().getState())
                     .spartyGender(taskDetails.getRespondentDetails().getGender())
                     .spartyMobile(taskDetails.getRespondentDetails().getPhone())
-                    .spartyAddress(taskDetails.getRespondentDetails().getAddress())
+                    .spartyAddress(address)
                     .spartyDistrict(taskDetails.getRespondentDetails().getDistrict())
                     .spartyRelationName(taskDetails.getRespondentDetails().getRelativeName())
                     .spartyRelationType(taskDetails.getRespondentDetails().getRelationWithRelative())
@@ -106,7 +111,7 @@ public class IcopsEnrichment {
                     .processRespondentAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
                     .processRespondentRelativeName(taskDetails.getRespondentDetails().getRelativeName())
                     .processRespondentRelation(taskDetails.getRespondentDetails().getRelationWithRelative())
-                    .processReceiverAddress(taskDetails.getRespondentDetails().getAddress())
+                    .processReceiverAddress(address)
                     .processReceiverState(taskDetails.getRespondentDetails().getState())
                     .processReceiverDistrict(taskDetails.getRespondentDetails().getDistrict())
                     .processReceiverPincode(taskDetails.getRespondentDetails().getPinCode())

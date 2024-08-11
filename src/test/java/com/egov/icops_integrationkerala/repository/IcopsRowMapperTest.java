@@ -53,7 +53,7 @@ class IcopsRowMapperTest {
         when(resultSet.getString("task_type")).thenReturn(taskType);
         when(resultSet.getString("file_store_id")).thenReturn(fileStoreId);
         when(resultSet.getString("task_details")).thenReturn(taskDetails);
-        when(resultSet.getString("delivery_status")).thenReturn(DeliveryStatus.DELIVERY_SUCCESSFUL.name());
+        when(resultSet.getString("delivery_status")).thenReturn(DeliveryStatus.DELIVERED.name());
         when(resultSet.getString("remarks")).thenReturn(remarks);
         when(resultSet.getString("additional_details")).thenReturn(additionalDetails);
         when(resultSet.getInt("row_version")).thenReturn(rowVersion);
