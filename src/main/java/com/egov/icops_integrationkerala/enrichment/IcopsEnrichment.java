@@ -61,7 +61,7 @@ public class IcopsEnrichment {
                 config.getIdName(),null,1).get(0);
         ProcessRequest processRequest;
         String address = objectMapper.writeValueAsString(taskDetails.getRespondentDetails().getAddress());
-        if(!task.getTaskType().isEmpty() && task.getTaskType().equalsIgnoreCase("warrant")){
+        if(!task.getTaskType().isEmpty() && task.getTaskType().equalsIgnoreCase("WARRANT")){
             String docSubType = Optional.ofNullable(taskDetails.getWarrantDetails().getDocSubType())
                     .orElse("Warrant of arrest");
 
