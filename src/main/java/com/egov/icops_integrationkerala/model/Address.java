@@ -28,4 +28,13 @@ public class Address {
     @JsonProperty("coordinate")
     private Coordinate coordinate;
 
+    @Override
+    public String toString() {
+        return "state=" + state +
+                ", city=" + city +
+                ", district=" + district +
+                ", pinCode=" + pinCode +
+                ", locality=" + locality;
+    }
+
 }
