@@ -26,7 +26,7 @@ public class CaseDetails {
     private String caseCharge;
 
     @JsonProperty("hearingDate")
-    private String hearingDate;
+    private Long hearingDate;
 
     @JsonProperty("judgeName")
     private String judgeName;
@@ -38,6 +38,5 @@ public class CaseDetails {
     private String courtCode;
 
     @JsonProperty("courtAddress")
-    @Valid
     private Address courtAddress;
 }
