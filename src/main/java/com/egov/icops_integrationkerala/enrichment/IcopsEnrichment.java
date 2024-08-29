@@ -100,7 +100,7 @@ public class IcopsEnrichment {
                     .orderSignedDate(converter.convertLongToDate(task.getCreatedDate()))
                     .processOrigin(config.getProcessOrigin())
                     .processInvAgency(config.getProcessInvAgency())
-                    .processCourtCode(taskDetails.getCaseDetails().getCourtCode())
+                    .processCourtCode(taskDetails.getCaseDetails().getCourtId())
                     .build();
         }
         else{
@@ -139,7 +139,7 @@ public class IcopsEnrichment {
                     .processOrigin(config.getProcessOrigin())
                     .processInvAgency(config.getProcessInvAgency())
                     .processRespondantType("A") // currently supported only for accused, so hardcoded it.
-                    .processCourtCode(taskDetails.getCaseDetails().getCourtCode())
+                    .processCourtCode(taskDetails.getCaseDetails().getCourtId())
                     .build();
         }
 
