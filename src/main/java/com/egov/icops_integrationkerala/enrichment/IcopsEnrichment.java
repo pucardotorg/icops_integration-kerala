@@ -83,7 +83,7 @@ public class IcopsEnrichment {
                     .build();
              processRequest = ProcessRequest.builder()
                     .partyData(partyData)
-                    .processCaseno(taskDetails.getCaseDetails().getCaseId())
+                    .processCaseno(task.getFilingNumber())
                     .processDoc(docFileString)
                     .processUniqueId(processUniqueId)
                     .processCourtName(taskDetails.getCaseDetails().getCourtName())
@@ -112,7 +112,7 @@ public class IcopsEnrichment {
 
             Map<String, String> docTypeInfo = getDocTypeCode(mdmsData, docSubType);
              processRequest = ProcessRequest.builder()
-                    .processCaseno(taskDetails.getCaseDetails().getCaseId())
+                    .processCaseno(task.getFilingNumber())
                     .processDoc(docFileString)
                     .processUniqueId(processUniqueId)
                     .processCourtName(taskDetails.getCaseDetails().getCourtName())
