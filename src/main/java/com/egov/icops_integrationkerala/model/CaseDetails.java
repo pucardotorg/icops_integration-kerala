@@ -16,6 +16,9 @@ public class CaseDetails {
     @JsonProperty("caseId")
     private String caseId;
 
+    @JsonProperty("courtId")
+    private String courtId;
+
     @JsonProperty("caseTitle")
     private String caseTitle;
 

@@ -64,10 +64,12 @@ public class IcopsEnrichment {
         if(!task.getTaskType().isEmpty() && task.getTaskType().equalsIgnoreCase("WARRANT")){
             String docSubType = Optional.ofNullable(taskDetails.getWarrantDetails().getDocSubType())
                     .orElse("Warrant of arrest");
+            Integer age = taskDetails.getRespondentDetails().getAge();
+            String ageString = (age != null) ? String.valueOf(age) : "";
 
             Map<String, String> docTypeInfo = getDocTypeCode(mdmsData, docSubType);
             PartyData partyData = PartyData.builder()
-                    .spartyAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
+                    .spartyAge(ageString)
                     .spartyName(taskDetails.getRespondentDetails().getName())
                     .spartyType("A")  // currently supported only for accused, so hardcoded it.
                     .spartyEmail(taskDetails.getRespondentDetails().getEmail())
@@ -81,7 +83,7 @@ public class IcopsEnrichment {
                     .build();
              processRequest = ProcessRequest.builder()
                     .partyData(partyData)
-                    .processCaseno(taskDetails.getCaseDetails().getCaseId())
+                    .processCaseno(task.getFilingNumber())
                     .processDoc(docFileString)
                     .processUniqueId(processUniqueId)
                     .processCourtName(taskDetails.getCaseDetails().getCourtName())
@@ -98,16 +100,19 @@ public class IcopsEnrichment {
                     .orderSignedDate(converter.convertLongToDate(task.getCreatedDate()))
                     .processOrigin(config.getProcessOrigin())
                     .processInvAgency(config.getProcessInvAgency())
-                    .processCourtCode(taskDetails.getCaseDetails().getCourtCode())
+                    .processCourtCode(taskDetails.getCaseDetails().getCourtId())
                     .build();
         }
         else{
             String docSubType = Optional.ofNullable(taskDetails.getSummonDetails().getDocSubType())
                     .orElse("Summons to an accused person");
+            Integer age = taskDetails.getRespondentDetails().getAge();
+            String ageString = (age != null) ? String.valueOf(age) : "";
+
 
             Map<String, String> docTypeInfo = getDocTypeCode(mdmsData, docSubType);
              processRequest = ProcessRequest.builder()
-                    .processCaseno(taskDetails.getCaseDetails().getCaseId())
+                    .processCaseno(task.getFilingNumber())
                     .processDoc(docFileString)
                     .processUniqueId(processUniqueId)
                     .processCourtName(taskDetails.getCaseDetails().getCourtName())
@@ -116,7 +121,7 @@ public class IcopsEnrichment {
                     .processNextHearingDate(converter.convertLongToDate(taskDetails.getCaseDetails().getHearingDate()))
                     .processRespondentName(taskDetails.getRespondentDetails().getName())
                     .processRespondentGender(taskDetails.getRespondentDetails().getGender())
-                    .processRespondentAge(String.valueOf(taskDetails.getRespondentDetails().getAge()))
+                    .processRespondentAge(ageString)
                     .processRespondentRelativeName(taskDetails.getRespondentDetails().getRelativeName())
                     .processRespondentRelation(taskDetails.getRespondentDetails().getRelationWithRelative())
                     .processReceiverAddress(taskDetails.getRespondentDetails().getAddress().toString())
@@ -134,7 +139,7 @@ public class IcopsEnrichment {
                     .processOrigin(config.getProcessOrigin())
                     .processInvAgency(config.getProcessInvAgency())
                     .processRespondantType("A") // currently supported only for accused, so hardcoded it.
-                    .processCourtCode(taskDetails.getCaseDetails().getCourtCode())
+                    .processCourtCode(taskDetails.getCaseDetails().getCourtId())
                     .build();
         }
 

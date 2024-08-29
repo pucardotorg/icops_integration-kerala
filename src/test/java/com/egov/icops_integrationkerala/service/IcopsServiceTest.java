@@ -59,6 +59,10 @@ class IcopsServiceTest {
     private Task task;
     private IcopsProcessReport icopsProcessReport;
 
+    private Address address;
+
+    private Coordinate coordinate;
+
     @BeforeEach
     void setUp() {
         taskRequest = mock(TaskRequest.class);
@@ -70,6 +74,8 @@ class IcopsServiceTest {
         channelMessage = new ChannelMessage();
         icopsTracker = mock(IcopsTracker.class);
         icopsProcessReport = mock(IcopsProcessReport.class);
+        address = mock(Address.class);
+        coordinate = mock(Coordinate.class);
     }
 
     @Test
@@ -81,8 +87,10 @@ class IcopsServiceTest {
         when(taskRequest.getTask()).thenReturn(task);
         when(task.getTaskDetails()).thenReturn(mock(TaskDetails.class));
         when(task.getTaskDetails().getRespondentDetails()).thenReturn(mock(RespondentDetails.class));
-        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getLatitude()).thenReturn("latitude");
-        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getLongitude()).thenReturn("longitude");
+        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress()).thenReturn(address);
+        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate()).thenReturn(coordinate);
+        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate().getLatitude()).thenReturn("latitude");
+        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate().getLongitude()).thenReturn("longitude");
         when(locationBasedJurisdiction.getIncludedJurisdiction()).thenReturn(mock(PoliceStationDetails.class));
         when(locationBasedJurisdiction.getIncludedJurisdiction().getCode()).thenReturn("code");
         when(locationBasedJurisdiction.getIncludedJurisdiction().getStation()).thenReturn("station");
@@ -103,8 +111,10 @@ class IcopsServiceTest {
         when(taskRequest.getTask()).thenReturn(task);
         when(task.getTaskDetails()).thenReturn(mock(TaskDetails.class));
         when(task.getTaskDetails().getRespondentDetails()).thenReturn(mock(RespondentDetails.class));
-        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getLatitude()).thenReturn("latitude");
-        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getLongitude()).thenReturn("longitude");
+        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress()).thenReturn(address);
+        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate()).thenReturn(coordinate);
+        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate().getLatitude()).thenReturn("latitude");
+        when(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate().getLongitude()).thenReturn("longitude");
         when(locationBasedJurisdiction.getIncludedJurisdiction()).thenReturn(mock(PoliceStationDetails.class));
         when(locationBasedJurisdiction.getIncludedJurisdiction().getCode()).thenReturn("code");
         when(locationBasedJurisdiction.getIncludedJurisdiction().getStation()).thenReturn("station");

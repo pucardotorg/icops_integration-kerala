@@ -56,8 +56,8 @@ public class IcopsService {
         ProcessRequest processRequest = icopsEnrichment.getProcessRequest(taskRequest);
 
         Location location = Location.builder()
-                .latitude(taskRequest.getTask().getTaskDetails().getRespondentDetails().getLatitude())
-                .longitude(taskRequest.getTask().getTaskDetails().getRespondentDetails().getLongitude()).build();
+                .latitude(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate().getLatitude())
+                .longitude(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate().getLongitude()).build();
 
         LocationBasedJurisdiction locationBasedJurisdiction = getLocationBasedJurisdiction(location);
 
