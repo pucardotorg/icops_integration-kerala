@@ -55,6 +55,19 @@ public class IcopsService {
 
         ProcessRequest processRequest = icopsEnrichment.getProcessRequest(taskRequest);
 
+        Coordinate coordinate = taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate();
+
+        if (coordinate == null) {
+            return createFailureResponse("coordinate object is missing in address field of respondentDetails");
+        }
+
+        String latitude = coordinate.getLatitude();
+        String longitude = coordinate.getLongitude();
+
+        if (latitude == null || latitude.trim().isEmpty() || longitude == null || longitude.trim().isEmpty()) {
+            return createFailureResponse("latitude or longitude data is missing or empty in coordinate field inside Address of respondentDetails");
+        }
+
         Location location = Location.builder()
                 .latitude(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate().getLatitude())
                 .longitude(taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate().getLongitude()).build();
@@ -71,16 +84,24 @@ public class IcopsService {
         IcopsTracker icopsTracker = null;
         if(channelMessage.getAcknowledgementStatus().equalsIgnoreCase("SUCCESS")) {
             log.info("successfully send request to icops");
-             icopsTracker = icopsEnrichment.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.STATUS_UNKNOWN);
+             icopsTracker = icopsEnrichment.createIcopsTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.STATUS_UNKNOWN);
         }
         else {
             log.error("Failure message",channelMessage.getFailureMsg());
-            icopsTracker = icopsEnrichment.createPostTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.FAILED);
+            icopsTracker = icopsEnrichment.createIcopsTrackerBody(taskRequest,processRequest,channelMessage,DeliveryStatus.FAILED);
         }
         IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
         producer.push("save-icops-tracker", request);
 
         return channelMessage;
+    }
+
+    private ChannelMessage createFailureResponse(String failureMessage) {
+        log.error(failureMessage);
+        ChannelMessage failureMessageResponse = new ChannelMessage();
+        failureMessageResponse.setAcknowledgementStatus("FAILURE");
+        failureMessageResponse.setFailureMsg(failureMessage);
+        return failureMessageResponse;
     }
 
     public AuthResponse generateAuthToken(String serviceName, String serviceKey, String authType) throws Exception {
