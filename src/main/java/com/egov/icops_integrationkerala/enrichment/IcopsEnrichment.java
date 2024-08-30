@@ -146,7 +146,7 @@ public class IcopsEnrichment {
         return processRequest;
     }
 
-    public IcopsTracker createPostTrackerBody(TaskRequest request, ProcessRequest processRequest, ChannelMessage channelMessage, DeliveryStatus status) {
+    public IcopsTracker createIcopsTrackerBody(TaskRequest request, ProcessRequest processRequest, ChannelMessage channelMessage, DeliveryStatus status) {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         return IcopsTracker.builder()
