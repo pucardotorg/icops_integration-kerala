@@ -58,14 +58,14 @@ public class IcopsService {
         Coordinate coordinate = taskRequest.getTask().getTaskDetails().getRespondentDetails().getAddress().getCoordinate();
 
         if (coordinate == null) {
-            return createFailureResponse("coordinate object is missing in address field of respondentDetails");
+            return createFailureResponse(taskRequest, processRequest, "coordinate object is missing in address field of respondentDetails");
         }
 
         String latitude = coordinate.getLatitude();
         String longitude = coordinate.getLongitude();
 
         if (latitude == null || latitude.trim().isEmpty() || longitude == null || longitude.trim().isEmpty()) {
-            return createFailureResponse("latitude or longitude data is missing or empty in coordinate field inside Address of respondentDetails");
+            return createFailureResponse(taskRequest, processRequest, "latitude or longitude data is missing or empty in coordinate field inside Address of respondentDetails");
         }
 
         Location location = Location.builder()
@@ -96,11 +96,18 @@ public class IcopsService {
         return channelMessage;
     }
 
-    private ChannelMessage createFailureResponse(String failureMessage) {
+    private ChannelMessage createFailureResponse(TaskRequest taskRequest, ProcessRequest processRequest, String failureMessage) {
         log.error(failureMessage);
+
         ChannelMessage failureMessageResponse = new ChannelMessage();
         failureMessageResponse.setAcknowledgementStatus("FAILURE");
         failureMessageResponse.setFailureMsg(failureMessage);
+
+        // Create and push IcopsTracker for failure scenario
+        IcopsTracker icopsTracker = icopsEnrichment.createIcopsTrackerBody(taskRequest, processRequest, failureMessageResponse, DeliveryStatus.FAILED);
+        IcopsRequest request = IcopsRequest.builder().requestInfo(taskRequest.getRequestInfo()).icopsTracker(icopsTracker).build();
+        producer.push("save-icops-tracker", request);
+
         return failureMessageResponse;
     }
 
